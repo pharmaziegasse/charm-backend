@@ -1,0 +1,25 @@
+### Pycache
+__pycache__/
+*.pyc
+
+### Media
+# Audios
+*.ogg
+*.mp3
+
+# Images
+*.jpg
+*.png
+*.gif
+*.svg
+
+# Fonts
+*.ttf
+
+### DB
+*.sqlite3
+
+### Virtual Environment
+.env
+dev-venv
+win-devenv
