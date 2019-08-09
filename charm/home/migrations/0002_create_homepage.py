@@ -2,6 +2,7 @@
 from django.db import migrations
 
 
+# Create the homepage model
 def create_homepage(apps, schema_editor):
     # Get models
     ContentType = apps.get_model('contenttypes.ContentType')
@@ -33,7 +34,8 @@ def create_homepage(apps, schema_editor):
     Site.objects.create(
         hostname='localhost', root_page=homepage, is_default_site=True)
 
-
+        
+# Delete the default homepage
 def remove_homepage(apps, schema_editor):
     # Get models
     ContentType = apps.get_model('contenttypes.ContentType')

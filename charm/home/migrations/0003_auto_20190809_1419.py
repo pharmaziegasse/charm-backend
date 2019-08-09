@@ -5,6 +5,8 @@ import django.db.models.deletion
 import wagtail.core.fields
 
 
+# This creates the CharmPage model with its new
+# fields and deletes the old HomePage model.
 class Migration(migrations.Migration):
 
     dependencies = [

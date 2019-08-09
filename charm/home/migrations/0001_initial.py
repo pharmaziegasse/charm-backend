@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import migrations, models
 
-
+# First default Wagtail migrations. 
+# The HomePage Model is deleted in a futer migration though.
 class Migration(migrations.Migration):
 
     dependencies = [
