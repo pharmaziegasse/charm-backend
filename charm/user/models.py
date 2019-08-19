@@ -23,48 +23,75 @@ class User(AbstractUser):
         error_messages={'unique': 'A user with that username already exists.'},
         help_text='Required. 36 characters or fewer. Letters, digits and @/./+/-/_ only.',
         max_length=36, unique=True, validators=[UnicodeUsernameValidator()],
-        verbose_name='username')
+        verbose_name='username'
+        )
     is_customer = models.BooleanField(
+        blank=False, default=True,
+        help_text='Establish if the user is a customer'
+        )
+    is_coach = models.BooleanField(
         blank=False, default=False,
-        help_text='Establish if the user is a customer')
+        help_text='Establish if the user is a coach'
+        )
+    coach = models.CharField(
+        null=True, blank=True,
+        help_text='If registering a user, set the user\'s coach', max_length=36
+        )
+    # A secondary "backup" coach is planned to be added later.
+    # https://github.com/pharmaziegasse/charm-backend/issues/10
+    # secondary_coach = models.CharField(
+    #     null=True, blank=True,
+    #     help_text='If registering a user, set the user\'s secondary coach', max_length=36
+    #     )
     title = models.CharField(
         null=True, blank=True, 
-        help_text='Title', max_length=12)
+        help_text='Title', max_length=12
+        )
     birthdate = models.DateField(
         auto_now=False, auto_now_add=False,
         null=True, blank=True,
-        help_text='Birthdate')
+        help_text='Birthdate'
+        )
     telephone = models.CharField(
         null=True, blank=False, 
-        help_text='Phone Number', max_length=40)
+        help_text='Phone Number', max_length=40
+        )
     address = models.CharField(
         null=True, blank=True,
-        help_text='Address', max_length=60)
+        help_text='Address', max_length=60
+        )
     city = models.CharField(
         null=True, blank=True,
-        help_text='City', max_length=60)
+        help_text='City', max_length=60
+        )
     postal_code = models.CharField(
         null=True, blank=True,
-        help_text='Postal Code', max_length=12)
+        help_text='Postal Code', max_length=12
+        )
     country = models.CharField(
         null=True, blank=True,
-        help_text='Country Code (e.g. AT)', max_length=2)
+        help_text='Country Code (e.g. AT)', max_length=2
+        )
     newsletter = models.BooleanField(
         blank=False, default=False,
-        help_text='Permit Newsletter')
+        help_text='Permit Newsletter'
+        )
     registration_data = models.TextField(
         null=True, blank=True,
-        help_text='JSON data')
+        help_text='JSON data'
+        )
     verified = models.BooleanField(
         blank=False, default=False,
-        help_text='Check if the user is verified')
+        help_text='Check if the user is verified'
+        )
+
 
     # custom save function
     def save(self, *args, **kwargs):
         if not self.username:
             # Set the username to a unique, random value
             self.username = str(uuid.uuid4())
-
+            
         if not self.registration_data or self.is_customer:
             if not self.is_active:
                 self.is_active = True
@@ -79,12 +106,18 @@ class User(AbstractUser):
                 # )
         else:
             self.is_active = False
+        
+        # A user has to have set a password
+        User.set_password(self, str(uuid.uuid4()))
 
         super(User, self).save(*args, **kwargs)
+
 
     panels = [
         # FieldPanel('username'),
         FieldPanel('is_customer'),
+        FieldPanel('is_coach'),
+        FieldPanel('coach'),
         FieldPanel('verified'),
         FieldPanel('title'),
         FieldPanel('first_name'),
