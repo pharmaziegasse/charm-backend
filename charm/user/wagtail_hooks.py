@@ -19,9 +19,13 @@ class UserAdmin(ModelAdmin):
     # Listed in the customer overview
     list_display = (
         'date_joined',
-        'username'
+        #'username',
+        'first_name',
+        'last_name',
+        'email',
+        'telephone',
         )
-        
+
     search_fields = list_display
 
 modeladmin_register(UserAdmin)
