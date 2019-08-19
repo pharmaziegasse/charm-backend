@@ -27,10 +27,15 @@ INSTALLED_APPS = [
     # These are our custom written apps.
     'charm.api',
     'charm.home',
+    'charm.user',
 
     # Graphene-Django is built on top of Graphene and is needed for GraphQL (charm.api dependency)
     # https://docs.graphene-python.org/projects/django/en/latest/
     'graphene_django',
+
+    # With the modeladmin module, we can add our models to the Wagtail admin page.
+    # http://docs.wagtail.io/en/v2.6.1/reference/contrib/modeladmin/
+    'wagtail.contrib.modeladmin',
 
     # Default Wagtail apps
     'wagtail.contrib.forms',
@@ -155,7 +160,11 @@ DATABASES = {
 }
 
 
-# Password validation
+# The main User Model Wagtail should use
+AUTH_USER_MODEL = 'user.User'
+
+
+# Validators used to check if the password is secure
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
