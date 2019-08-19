@@ -21,9 +21,7 @@ class UserAdmin(ModelAdmin):
         'date_joined',
         'username'
         )
-    search_fields = (
-        'date_joined', 
-        'username'
-        )
+        
+    search_fields = list_display
 
 modeladmin_register(UserAdmin)
