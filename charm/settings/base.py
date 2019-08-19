@@ -24,8 +24,10 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Application definition
 
 INSTALLED_APPS = [
+    # These are our custom written apps.
     'charm.home',
 
+    # Default Wagtail apps
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.embeds',
@@ -38,9 +40,13 @@ INSTALLED_APPS = [
     'wagtail.admin',
     'wagtail.core',
 
+    # django-modelcluster extends Django's foreign key relations. It introduces a new type of relation, ParentalKey.
+    # https://github.com/wagtail/django-modelcluster
     'modelcluster',
+    # Django module for Tags, extending modelcluster
     'taggit',
 
+    # Default Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,13 +68,14 @@ MIDDLEWARE = [
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
+# Root URL path 
 ROOT_URLCONF = 'charm.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(PROJECT_DIR, 'templates'),
+            # os.path.join(PROJECT_DIR, 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -80,6 +87,21 @@ TEMPLATES = [
             ],
         },
     },
+    # Jinja2 is a more developer-friendly templating language based on DTL (Django Template Language)
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'APP_DIRS': True,
+        'DIRS': [
+            os.path.join(PROJECT_DIR, 'jinja2'),
+        ],
+        'OPTIONS': {
+            'extensions': [
+                'wagtail.core.jinja2tags.core',
+                'wagtail.admin.jinja2tags.userbar',
+                'wagtail.images.jinja2tags.images',
+            ],
+        },
+    }
 ]
 
 WSGI_APPLICATION = 'charm.wsgi.application'
@@ -120,7 +142,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# Adjusted timezone
+TIME_ZONE = 'Europe/Vienna'
 
 USE_I18N = True
 
@@ -159,4 +182,4 @@ WAGTAIL_SITE_NAME = "charm"
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
-BASE_URL = 'http://example.com'
+BASE_URL = 'http://charm.pharmaziegasse.at'
