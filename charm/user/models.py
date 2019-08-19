@@ -11,6 +11,9 @@ from django.contrib.auth.models import AbstractUser
 # The username field uses a validator to check wheter the username value is unique or not.
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
+# ValidationError is used to raise our custom errors through the clean() method
+from django.core.exceptions import ValidationError
+
 from django.db import models
 
 from wagtail.admin.edit_handlers import FieldPanel
@@ -85,18 +88,50 @@ class User(AbstractUser):
         help_text='Check if the user is verified'
         )
 
+    
+    # In this method, custom model validation is provided. This is called by full_clean().
+    # https://docs.djangoproject.com/en/2.2/ref/models/instances/#django.db.models.Model.clean
+    def clean(self):
+        # ValidationErrors do get saved to the ValidationErrorList Array
+        ValidationErrorList = []
+
+        # A user cannot be a customer and a coach at the same time
+        if self.is_customer and self.is_coach:
+            ValidationErrorList.append(ValidationError("User cannot be customer and coach at the same time"))
+
+        # A customer can not be saved without a coach
+        if self.is_customer and not self.coach:
+            ValidationErrorList.append(ValidationError("Customer has to have a coach"))
+
+        if (len(ValidationErrorList) > 0):
+            # All applicable ValidationErrors get raised
+            raise ValidationError([
+                ValidationErrorList
+            ])
 
     # custom save function
     def save(self, *args, **kwargs):
+        # A user must have set a password
+        # This has to be done before calling the validation function full_clean()
+        User.set_password(self, str(uuid.uuid4()))
+        
+        # The full_clean() method calls all three steps involved in validating a model:
+        # > Validate the model fields - clean_fields()
+        # > Validate the model as a whole - clean(), we defined a custom method of this above
+        # > Validate the field uniqueness - validate_unique()
+        # https://docs.djangoproject.com/en/2.2/ref/models/instances/#django.db.models.Model.full_clean
+        self.full_clean()
+
         if not self.username:
             # Set the username to a unique, random value
             self.username = str(uuid.uuid4())
             
         if not self.registration_data or self.is_customer:
             if not self.is_active:
+                # Sets is_active automatically to True either when registration_data is empty or is_customer is true
+                # registration_data is empty when a user is created manually on the Wagtail admin page (coach)
                 self.is_active = True
-                # Sets is_active to True if a user is created manually on the Wagtail admin page
-
+                
                 # send_mail(
                 #     'got activated',
                 #     'You got activated.',
@@ -106,12 +141,8 @@ class User(AbstractUser):
                 # )
         else:
             self.is_active = False
-        
-        # A user has to have set a password
-        User.set_password(self, str(uuid.uuid4()))
 
         super(User, self).save(*args, **kwargs)
-
 
     panels = [
         # FieldPanel('username'),
