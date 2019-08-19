@@ -25,7 +25,12 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 INSTALLED_APPS = [
     # These are our custom written apps.
+    'charm.api',
     'charm.home',
+
+    # Graphene-Django is built on top of Graphene and is needed for GraphQL (charm.api dependency)
+    # https://docs.graphene-python.org/projects/django/en/latest/
+    'graphene_django',
 
     # Default Wagtail apps
     'wagtail.contrib.forms',
@@ -52,7 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles', # This is also required for GraphiQL
 ]
 
 MIDDLEWARE = [
@@ -66,6 +71,38 @@ MIDDLEWARE = [
 
     'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+]
+
+# This is the Schema Graphene is using
+GRAPHENE = {
+    'SCHEMA': 'charm.api.schema.schema',
+
+    # Authentication will make use of JSON Web Tokens (JWT)
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ]
+}
+
+GRAPHQL_JWT = {
+    # Allow per-argument authentication system
+    'JWT_ALLOW_ARGUMENT': True,
+}
+
+GRAPHQL_API = {
+    'APPS': [
+        'home',
+    ],
+    'PREFIX': {
+    },
+    'URL_PREFIX': {
+    },
+    'RELAY': False,
+}
+
+# JWT as authentication backend
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 # Root URL path 
@@ -87,8 +124,8 @@ TEMPLATES = [
             ],
         },
     },
-    # Jinja2 is a more developer-friendly templating language based on DTL (Django Template Language)
     {
+        # Jinja2 is a more developer-friendly templating language based on DTL (Django Template Language)
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
         'APP_DIRS': True,
         'DIRS': [
