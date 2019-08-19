@@ -27,6 +27,10 @@ INSTALLED_APPS = [
     # These are our custom written apps.
     'charm.home',
 
+    # Graphene-Django is built on top of Graphene and is needed for GraphQL (charm.api dependency)
+    # https://docs.graphene-python.org/projects/django/en/latest/
+    'graphene_django',
+
     # Default Wagtail apps
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
@@ -52,7 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles', # This is also required for GraphiQL
 ]
 
 MIDDLEWARE = [
