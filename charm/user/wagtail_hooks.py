@@ -1,7 +1,6 @@
-## Reference:
-## http://docs.wagtail.io/en/v2.6.1/reference/contrib/modeladmin/
+# Reference:
+# http://docs.wagtail.io/en/v2.6.1/reference/contrib/modeladmin/
 
-from wagtail.core import hooks
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
 # Custom User model

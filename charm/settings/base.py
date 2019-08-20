@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'charm.home',
     'charm.user',
     'charm.beautyreport',
+    'charm.anamnese',
 
     # Graphene-Django is built on top of Graphene and is needed for GraphQL (charm.api dependency)
     # https://docs.graphene-python.org/projects/django/en/latest/
