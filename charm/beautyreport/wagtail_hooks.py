@@ -16,6 +16,8 @@ class BeautyreportAdmin(ModelAdmin):
    
     # Listed in the customer overview
     list_display = (
+        'user',
+        'form_data'
         # 'date',
         # 'uid',
         # 'brid',

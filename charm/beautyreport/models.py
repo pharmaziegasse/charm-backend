@@ -1,6 +1,13 @@
+from django.contrib.auth import get_user_model
+
 from django.db import models
 
 class Beautyreport(models.Model):
-    uid = models.CharField(
-        null=True, blank=False, max_length=36
+    # This field identifies to which user the anamnese report belongs to
+    user = models.ForeignKey(
+        get_user_model(), null=True,
+        on_delete=models.SET_NULL
+        )
+    form_data = models.TextField(
+        null=True, blank=True
     )
