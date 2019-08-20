@@ -111,16 +111,21 @@ class User(AbstractUser):
 
     # custom save function
     def save(self, *args, **kwargs):
-        # A user must have set a password
-        # This has to be done before calling the validation function full_clean()
-        User.set_password(self, str(uuid.uuid4()))
+        if not User.password:
+            # A user must have set a password
+            # This has to be done before calling the validation function full_clean()
+            User.set_password(self, str(uuid.uuid4()))
         
-        # The full_clean() method calls all three steps involved in validating a model:
-        # > Validate the model fields - clean_fields()
-        # > Validate the model as a whole - clean(), we defined a custom method of this above
-        # > Validate the field uniqueness - validate_unique()
-        # https://docs.djangoproject.com/en/2.2/ref/models/instances/#django.db.models.Model.full_clean
-        self.full_clean()
+        # Seems to be checked when logging in to the Wagtail CMS.
+        # Therefore raises a ValidationError when superuser is logging in as the dev SU does have an empty phone field.
+        # Solution -> Skip check for superuser
+        if not User.is_superuser:
+            # The full_clean() method calls all three steps involved in validating a model:
+            # > Validate the model fields - clean_fields()
+            # > Validate the model as a whole - clean(), we defined a custom method of this above
+            # > Validate the field uniqueness - validate_unique()
+            # https://docs.djangoproject.com/en/2.2/ref/models/instances/#django.db.models.Model.full_clean
+            self.full_clean()
 
         if not self.username:
             # Set the username to a unique, random value
@@ -165,4 +170,17 @@ class User(AbstractUser):
     ]
 
     def __str__(self):
-        return self.username
+        r_string = self.telephone
+        if self.first_name or self.last_name or self.email:
+            r_string += ":"
+        if self.first_name:
+            r_string += " " + self.first_name
+        if self.last_name:
+            r_string += " " + self.last_name
+        if self.email:
+            if self.first_name or self.last_name:
+                r_string += ", " + self.email
+            else:
+                r_string += " " + self.email
+
+        return r_string
