@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     # These are our custom written apps.
     'charm.api',
     'charm.home',
+    'charm.reports',
     'charm.user',
     'charm.beautyreport',
     'charm.anamnese',
@@ -98,6 +99,7 @@ GRAPHQL_JWT = {
 GRAPHQL_API = {
     'APPS': [
         'home',
+        'reports',
         'anamnese',
         'beautyreport',
     ],
