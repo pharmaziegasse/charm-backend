@@ -29,6 +29,7 @@ from .types import (  # noqa: E402
 import graphql_jwt
 
 # Register all your schemes for graphql here.
+import charm.anamnese.schema
 import charm.beautyreport.schema
 
 # api version
@@ -46,6 +47,7 @@ SnippetsQueryMixin_ = SnippetsQueryMixin()  # type: Any
 
 
 class Query(
+    charm.anamnese.schema.Query,
     charm.beautyreport.schema.Query,
     graphene.ObjectType,
     #AuthQueryMixin_,

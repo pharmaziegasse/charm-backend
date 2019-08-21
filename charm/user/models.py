@@ -116,6 +116,10 @@ class User(AbstractUser):
             # This has to be done before calling the validation function full_clean()
             User.set_password(self, str(uuid.uuid4()))
         
+        # A coach gets staff permissions
+        if User.is_coach and not User.is_staff:
+            User.is_staff == True
+
         # Seems to be checked when logging in to the Wagtail CMS.
         # Therefore raises a ValidationError when superuser is logging in as the dev SU does have an empty phone field.
         # Solution -> Skip check for superuser
