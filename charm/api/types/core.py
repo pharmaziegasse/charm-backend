@@ -23,8 +23,8 @@ from ..settings import url_prefix_for_site, RELAY
 from ..registry import registry
 from ..permissions import with_page_permissions
 # User Model
-from django.contrib.auth.models import User as wagtailUser
-# from charm.user.models import User as wagtailUser
+# from django.contrib.auth.models import User as wagtailUser
+from charm.user.models import User as wagtailUser
 
 
 class User(DjangoObjectType):

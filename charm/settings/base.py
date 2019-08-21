@@ -99,6 +99,7 @@ GRAPHQL_API = {
     'APPS': [
         'home',
         'anamnese',
+        'beautyreport',
     ],
     'PREFIX': {
     },
