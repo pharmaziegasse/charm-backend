@@ -1,0 +1,32 @@
+### Pycache
+__pycache__/
+*.pyc
+
+### Media
+# Audios
+*.ogg
+*.mp3
+
+# Images
+*.jpg
+*.png
+*.gif
+*.svg
+
+# Fonts
+*.ttf
+
+### Git
+.git/
+.github/
+.gitignore
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+PULL_REQUEST_TEMPLATE.md
+
+### DB
+*.sqlite3
+
+### Development Virtual Environment
+.env
+dev-venv/
