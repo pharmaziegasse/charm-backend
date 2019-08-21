@@ -28,6 +28,9 @@ class Anamnese(models.Model):
         null=True, blank=True
     )
 
+    class Meta:
+        get_latest_by = "date"
+
 class AnFormPage(AbstractEmailForm):
     content_panels = AbstractEmailForm.content_panels + [
         MultiFieldPanel(

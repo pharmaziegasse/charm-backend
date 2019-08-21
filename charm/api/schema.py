@@ -29,6 +29,7 @@ from .types import (  # noqa: E402
 import graphql_jwt
 
 # Register all your schemes for graphql here.
+import charm.anamnese.schema
 
 
 # api version
@@ -45,17 +46,19 @@ SettingsQueryMixin_ = SettingsQueryMixin()  # type: Any
 SnippetsQueryMixin_ = SnippetsQueryMixin()  # type: Any
 
 
-class Query(graphene.ObjectType,
-            #AuthQueryMixin_,
-            #DocumentQueryMixin_,
-            ImageQueryMixin_,
-            InfoQueryMixin_,
-            #MenusQueryMixin_,
-            PagesQueryMixin_,
-            #SettingsQueryMixin_,
-            #SnippetsQueryMixin_,
-            RelayMixin,
-            ):
+class Query(
+    charm.anamnese.schema.Query,
+    graphene.ObjectType,
+    #AuthQueryMixin_,
+    #DocumentQueryMixin_,
+    ImageQueryMixin_,
+    InfoQueryMixin_,
+    #MenusQueryMixin_,
+    PagesQueryMixin_,
+    #SettingsQueryMixin_,
+    #SnippetsQueryMixin_,
+    RelayMixin,
+    ):
     # API Version
     format = graphene.Field(String)
 
