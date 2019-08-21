@@ -98,6 +98,8 @@ GRAPHQL_JWT = {
 GRAPHQL_API = {
     'APPS': [
         'home',
+        'anamnese',
+        'beautyreport',
     ],
     'PREFIX': {
     },

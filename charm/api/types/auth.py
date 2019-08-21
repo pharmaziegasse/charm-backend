@@ -6,8 +6,8 @@ from graphql.execution.base import ResolveInfo
 # app types
 from .core import User
 # User Model
-from django.contrib.auth.models import User as wagtailUser, AnonymousUser
-# from charm.user.models import User as wagtailUser
+# from django.contrib.auth.models import User as wagtailUser, AnonymousUser
+from charm.user.models import User as wagtailUser
 
 
 def AuthQueryMixin():
