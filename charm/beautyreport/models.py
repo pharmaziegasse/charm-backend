@@ -28,6 +28,9 @@ class Beautyreport(models.Model):
         null=True, blank=True
     )
 
+    class Meta:
+        get_latest_by = "date"
+
 class BrFormPage(AbstractEmailForm):
     content_panels = AbstractEmailForm.content_panels + [
         MultiFieldPanel(
