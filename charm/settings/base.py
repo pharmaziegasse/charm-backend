@@ -69,6 +69,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # This middlewear is needed for configuring CORS (Cross-Origin Resource Sharing)
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,6 +83,10 @@ MIDDLEWARE = [
     'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
+
+# If True, the whitelist will not be used and all origins will be accepted
+# See https://pypi.org/project/django-cors-headers/
+CORS_ORIGIN_ALLOW_ALL = True
 
 # This is the Schema Graphene is using
 GRAPHENE = {
