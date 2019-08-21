@@ -49,44 +49,44 @@ class User(AbstractUser):
     title = models.CharField(
         null=True, blank=True, 
         help_text='Title', max_length=12
-        )
+    )
     birthdate = models.DateField(
         auto_now=False, auto_now_add=False,
         null=True, blank=True,
         help_text='Birthdate'
-        )
+    )
     telephone = models.CharField(
         null=True, blank=False, 
         help_text='Phone Number', max_length=40
-        )
+    )
     address = models.CharField(
         null=True, blank=True,
         help_text='Address', max_length=60
-        )
+    )
     city = models.CharField(
         null=True, blank=True,
         help_text='City', max_length=60
-        )
+    )
     postal_code = models.CharField(
         null=True, blank=True,
         help_text='Postal Code', max_length=12
-        )
+    )
     country = models.CharField(
         null=True, blank=True,
         help_text='Country Code (e.g. AT)', max_length=2
-        )
+    )
     newsletter = models.BooleanField(
         blank=False, default=False,
         help_text='Permit Newsletter'
-        )
+    )
     registration_data = models.TextField(
         null=True, blank=True,
         help_text='JSON data'
-        )
+    )
     verified = models.BooleanField(
         blank=False, default=False,
         help_text='Check if the user is verified'
-        )
+    )
 
     
     # In this method, custom model validation is provided. This is called by full_clean().
