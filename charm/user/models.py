@@ -111,19 +111,19 @@ class User(AbstractUser):
 
     # custom save function
     def save(self, *args, **kwargs):
-        if not User.password:
+        if not self.password:
             # A user must have set a password
             # This has to be done before calling the validation function full_clean()
             User.set_password(self, str(uuid.uuid4()))
         
         # A coach gets staff permissions
-        if User.is_coach and not User.is_staff:
-            User.is_staff == True
+        if self.is_coach and not self.is_staff:
+            self.is_staff == True
 
         # Seems to be checked when logging in to the Wagtail CMS.
         # Therefore raises a ValidationError when superuser is logging in as the dev SU does have an empty phone field.
         # Solution -> Skip check for superuser
-        if not User.is_superuser:
+        if not self.is_superuser:
             # The full_clean() method calls all three steps involved in validating a model:
             # > Validate the model fields - clean_fields()
             # > Validate the model as a whole - clean(), we defined a custom method of this above
@@ -174,6 +174,10 @@ class User(AbstractUser):
     ]
 
     def __str__(self):
+        # Mainly for superusers
+        if not self.telephone:
+            self.telephone = "Unknown"
+
         r_string = self.telephone
         if self.first_name or self.last_name or self.email:
             r_string += ":"
