@@ -14,7 +14,7 @@ class _S_ParagraphBlock(blocks.StructBlock):
 
 
 class _S_SubChapterBlock(blocks.StructBlock):
-    sub_chapter_header = blocks.CharBlock(null=True, blank=True)
+    sub_chapter_header = blocks.CharBlock(null=True, blank=True, required=False)
     
     paragraphs = blocks.StreamBlock([
         # Paragraph blocks are rendered in case a specific statement, which each paragraph has, is true
@@ -26,8 +26,6 @@ class _S_ChapterBlock(blocks.StructBlock):
 
     sub_chapters = blocks.StreamBlock([
         ('s_subchapter', _S_SubChapterBlock(null=True, blank=False, icon='mail', label="Sub Chapter")),
-        # Paragraph blocks are rendered in case a specific statement, which each paragraph has, is true
-        ('s_paragraph', _S_ParagraphBlock(null=True, blank=False, icon='group', label="Paragraph"))
     ], null=True, blank=False)
 
 class ReportsPage(Page):
