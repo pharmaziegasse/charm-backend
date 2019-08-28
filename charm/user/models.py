@@ -43,16 +43,18 @@ class User(AbstractUser):
         blank=False, default=False,
         help_text='Establish if the user is a coach'
     )
+    # This is called lazy evaluation. https://stackoverflow.com/a/5680864/9638541
     coach = models.ForeignKey(
-        'self', null=True,
-        on_delete=models.SET_NULL
+        'coach.Coach', null=True,
+        on_delete=models.SET_NULL,
+        help_text='Select the user\'s coach'
     )
     # A secondary "backup" coach is planned to be added later.
     # https://github.com/pharmaziegasse/charm-backend/issues/10
     # secondary_coach = models.CharField(
     #     null=True, blank=True,
     #     help_text='If registering a user, set the user\'s secondary coach', max_length=36
-    #     )
+    # )
     title = models.CharField(
         null=True, blank=True, 
         help_text='Title', max_length=12
