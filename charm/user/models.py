@@ -4,6 +4,9 @@
 # We use uuid to generate a unique username, as Charm's customers are identified by a field other than the username.
 import uuid
 
+# This returns the currently active user model
+from django.contrib.auth import get_user_model
+
 # AbstractUser is, next to AbstractBaseUser, one of the two default user models in Django.
 # AbstractUser already defines some useful fields, which we inherit.
 from django.contrib.auth.models import AbstractUser
@@ -40,9 +43,9 @@ class User(AbstractUser):
         blank=False, default=False,
         help_text='Establish if the user is a coach'
     )
-    coach = models.CharField(
-        null=True, blank=True,
-        help_text='If registering a user, set the user\'s coach', max_length=36
+    coach = models.ForeignKey(
+        'self', null=True,
+        on_delete=models.SET_NULL
     )
     # A secondary "backup" coach is planned to be added later.
     # https://github.com/pharmaziegasse/charm-backend/issues/10
@@ -164,7 +167,6 @@ class User(AbstractUser):
 
     panels = [
         FieldPanel('username'),
-        FieldPanel('password'),
         FieldPanel('is_staff'),
         FieldPanel('is_customer'),
         FieldPanel('is_coach'),
