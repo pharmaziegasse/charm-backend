@@ -27,19 +27,23 @@ class User(AbstractUser):
         help_text='Required. 36 characters or fewer. Letters, digits and @/./+/-/_ only.',
         max_length=36, unique=True, validators=[UnicodeUsernameValidator()],
         verbose_name='username'
-        )
+    )
+    is_staff = models.BooleanField(
+        default=False,
+        help_text='Designates whether the user can log into this admin site.',
+    )
     is_customer = models.BooleanField(
         blank=False, default=True,
         help_text='Establish if the user is a customer'
-        )
+    )
     is_coach = models.BooleanField(
         blank=False, default=False,
         help_text='Establish if the user is a coach'
-        )
+    )
     coach = models.CharField(
         null=True, blank=True,
         help_text='If registering a user, set the user\'s coach', max_length=36
-        )
+    )
     # A secondary "backup" coach is planned to be added later.
     # https://github.com/pharmaziegasse/charm-backend/issues/10
     # secondary_coach = models.CharField(
@@ -56,7 +60,7 @@ class User(AbstractUser):
         help_text='Birthdate'
     )
     telephone = models.CharField(
-        null=True, blank=False, 
+        null=True, blank=False, unique=True, 
         help_text='Phone Number', max_length=40
     )
     address = models.CharField(
@@ -88,6 +92,7 @@ class User(AbstractUser):
         help_text='Check if the user is verified'
     )
 
+    USERNAME_FIELD = 'telephone'
     
     # In this method, custom model validation is provided. This is called by full_clean().
     # https://docs.djangoproject.com/en/2.2/ref/models/instances/#django.db.models.Model.clean
@@ -103,6 +108,9 @@ class User(AbstractUser):
         if self.is_customer and not self.coach:
             ValidationErrorList.append(ValidationError("Customer has to have a coach"))
 
+        # if not self.telephone:
+        #     ValidationErrorList.append(ValidationError("User needs to have a valid phone number"))
+
         if (len(ValidationErrorList) > 0):
             # All applicable ValidationErrors get raised
             raise ValidationError([
@@ -116,9 +124,10 @@ class User(AbstractUser):
             # This has to be done before calling the validation function full_clean()
             User.set_password(self, str(uuid.uuid4()))
         
-        # A coach gets staff permissions
-        if self.is_coach and not self.is_staff:
-            self.is_staff == True
+        # // No, he does not anymore
+        # - A coach gets staff permissions
+        # if self.is_coach and not self.is_staff:
+        # self.is_staff = True
 
         # Seems to be checked when logging in to the Wagtail CMS.
         # Therefore raises a ValidationError when superuser is logging in as the dev SU does have an empty phone field.
@@ -154,7 +163,9 @@ class User(AbstractUser):
         super(User, self).save(*args, **kwargs)
 
     panels = [
-        # FieldPanel('username'),
+        FieldPanel('username'),
+        FieldPanel('password'),
+        FieldPanel('is_staff'),
         FieldPanel('is_customer'),
         FieldPanel('is_coach'),
         FieldPanel('coach'),
