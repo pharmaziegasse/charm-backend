@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'charm.home',
     'charm.reports',
     'charm.user',
+    'charm.customer',
     'charm.beautyreport',
     'charm.anamnese',
 
