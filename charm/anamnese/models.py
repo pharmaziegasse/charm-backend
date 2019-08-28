@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+# This returns the currently active user model
 from django.contrib.auth import get_user_model
 from django.core.serializers.json import DjangoJSONEncoder
 

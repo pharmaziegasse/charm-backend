@@ -60,6 +60,6 @@ class Query(graphene.AbstractType):
         return get_user_model().objects.get(username=username)
 
     @login_required
-    def resolve_user_self(self, info, uid, **_kwargs):
+    def resolve_user_self(self, info, **_kwargs):
         user = info.context.user
         return user
