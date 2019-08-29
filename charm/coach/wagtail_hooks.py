@@ -12,8 +12,8 @@ class CoachAdmin(ModelAdmin):
    
     # Listed in the customer overview
     list_display = (
-        'date_joined',
-        #'username',
+        # 'date_joined',
+        # 'username',
         'first_name',
         'last_name',
         'email',

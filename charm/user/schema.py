@@ -37,6 +37,20 @@ class Query(graphene.AbstractType):
         username=graphene.String(required=True)
     )
 
+    # Returns the username of a user object with a given phone number
+    username_by_phone = graphene.Field(
+        graphene.String,
+        token=graphene.String(required=False),
+        phone=graphene.String(required=True)
+    )
+
+    # Returns the username of a user object with a given email address
+    username_by_email = graphene.Field(
+        graphene.String,
+        token=graphene.String(required=False),
+        email=graphene.String(required=True)
+    )
+
     # Returns currently logged in user object
     user_self = graphene.Field(
         UserType,
@@ -58,6 +72,16 @@ class Query(graphene.AbstractType):
     @staff_member_required
     def resolve_user_by_name(self, info, username, **_kwargs):
         return get_user_model().objects.get(username=username)
+
+    @login_required
+    def resolve_username_by_phone(self, info, phone, **_kwargs):
+        user = get_user_model().objects.get(telephone=phone)
+        return user.username
+
+    @login_required
+    def resolve_username_by_email(self, info, email, **_kwargs):
+        user = get_user_model().objects.get(email=email)
+        return user.username
 
     @login_required
     def resolve_user_self(self, info, **_kwargs):
