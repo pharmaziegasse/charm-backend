@@ -30,6 +30,8 @@ import graphql_jwt
 
 # Register all your schemes for graphql here.
 import charm.user.schema
+import charm.coach.schema
+import charm.customer.schema
 import charm.anamnese.schema
 import charm.beautyreport.schema
 
@@ -49,6 +51,8 @@ SnippetsQueryMixin_ = SnippetsQueryMixin()  # type: Any
 
 class Query(
     charm.user.schema.Query,
+    charm.coach.schema.Query,
+    charm.customer.schema.Query,
     charm.anamnese.schema.Query,
     charm.beautyreport.schema.Query,
     graphene.ObjectType,
