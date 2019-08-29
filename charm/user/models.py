@@ -27,13 +27,13 @@ class User(AbstractUser):
     username = models.CharField(
         null=True, blank=True,
         error_messages={'unique': 'A user with that username already exists.'},
-        help_text='Required. 36 characters or fewer. Letters, digits and @/./+/-/_ only.',
+        help_text='Set this in case it\'s a staff account',
         max_length=36, unique=True, validators=[UnicodeUsernameValidator()],
-        verbose_name='username'
+        verbose_name='Username / Set this only if it\'s a staff account'
     )
     is_staff = models.BooleanField(
         default=False,
-        help_text='Designates whether the user can log into this admin site.',
+        help_text='Establish if the user is a staff member.',
     )
     is_customer = models.BooleanField(
         blank=False, default=True,
@@ -45,7 +45,7 @@ class User(AbstractUser):
     )
     # This is called lazy evaluation. https://stackoverflow.com/a/5680864/9638541
     coach = models.ForeignKey(
-        'coach.Coach', null=True,
+        'coach.Coach', null=True, blank=True,
         on_delete=models.SET_NULL,
         help_text='Select the user\'s coach'
     )
@@ -96,6 +96,10 @@ class User(AbstractUser):
         blank=False, default=False,
         help_text='Check if the user is verified'
     )
+    activation_url = models.CharField(
+        null=True, blank=True,
+        help_text='Activation URL', max_length=200
+    )
 
     USERNAME_FIELD = 'telephone'
     
@@ -113,6 +117,10 @@ class User(AbstractUser):
         if self.is_customer and not self.coach:
             ValidationErrorList.append(ValidationError("Customer has to have a coach"))
 
+        # A staff member needs a rememberable username to be set to log into the wagtail CMS
+        if self.is_staff and not self.username:
+            ValidationErrorList.append(ValidationError("Staff member needs a username"))
+
         # if not self.telephone:
         #     ValidationErrorList.append(ValidationError("User needs to have a valid phone number"))
 
@@ -127,12 +135,9 @@ class User(AbstractUser):
         if not self.password:
             # A user must have set a password
             # This has to be done before calling the validation function full_clean()
-            User.set_password(self, str(uuid.uuid4()))
-        
-        # // No, he does not anymore
-        # - A coach gets staff permissions
-        # if self.is_coach and not self.is_staff:
-        # self.is_staff = True
+            password = str(uuid.uuid4())
+            User.set_password(self, password)
+            self.activation_url = password
 
         # Seems to be checked when logging in to the Wagtail CMS.
         # Therefore raises a ValidationError when superuser is logging in as the dev SU does have an empty phone field.
@@ -145,7 +150,7 @@ class User(AbstractUser):
             # https://docs.djangoproject.com/en/2.2/ref/models/instances/#django.db.models.Model.full_clean
             self.full_clean()
 
-        if not self.username:
+        if not self.is_staff and not self.username:
             # Set the username to a unique, random value
             self.username = str(uuid.uuid4())
             
@@ -171,9 +176,9 @@ class User(AbstractUser):
         FieldPanel('username'),
         FieldPanel('is_staff'),
         FieldPanel('is_customer'),
+        FieldPanel('verified'),
         FieldPanel('is_coach'),
         FieldPanel('coach'),
-        FieldPanel('verified'),
         FieldPanel('title'),
         FieldPanel('first_name'),
         FieldPanel('last_name'),
