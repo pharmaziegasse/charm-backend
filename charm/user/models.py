@@ -65,8 +65,13 @@ class User(AbstractUser):
         help_text='Birthdate'
     )
     telephone = models.CharField(
-        null=True, blank=False, unique=True, 
+        null=True, blank=False, unique=True,
+        error_messages={'unique': 'A user with that phone number already exists.'},
         help_text='Phone Number', max_length=40
+    )
+    email = models.EmailField(
+        null=True, blank=False,
+        help_text='Email Address'
     )
     address = models.CharField(
         null=True, blank=True,
@@ -101,7 +106,8 @@ class User(AbstractUser):
         help_text='Activation URL', max_length=200
     )
 
-    USERNAME_FIELD = 'telephone'
+    # The default identificator Django uses is set to the telephone field
+    # USERNAME_FIELD = 'telephone'
     
     # In this method, custom model validation is provided. This is called by full_clean().
     # https://docs.djangoproject.com/en/2.2/ref/models/instances/#django.db.models.Model.clean
