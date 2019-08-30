@@ -176,10 +176,13 @@ class User(AbstractUser):
         else:
             self.is_active = False
 
+        # Get the Permission object
         permission = Permission.objects.get(codename='coach')
 
         if self.is_coach:
+            # If the user is a coach, add the coach permission
             self.user_permissions.add(permission)
+            # A coach does not have a coach. If a coach is set, it is unset
             self.coach = None
         else:
             self.user_permissions.remove(permission)
@@ -229,6 +232,7 @@ class User(AbstractUser):
 
 
     class Meta:
+        # This are custom user permissions in the format "codename": "name"
         permissions = [
             ("coach", "The user is a coach"),
         ]
