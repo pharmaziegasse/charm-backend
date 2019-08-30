@@ -1,5 +1,7 @@
 import graphene
 
+from django.contrib.auth import get_user_model
+
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import permission_required, login_required
 
@@ -7,7 +9,7 @@ from .models import Coach
 
 class CoachType(DjangoObjectType):
     class Meta:
-        model = Coach
+        model = get_user_model()
 
 class Query(graphene.AbstractType):
     # Returns all coaches
