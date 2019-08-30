@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 
 # AbstractUser is, next to AbstractBaseUser, one of the two default user models in Django.
 # AbstractUser already defines some useful fields, which we inherit.
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission
 
 # The username field uses a validator to check wheter the username value is unique or not.
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -57,7 +57,7 @@ class User(AbstractUser):
     # )
     title = models.CharField(
         null=True, blank=True, 
-        help_text='Title', max_length=12
+        help_text='Title', max_length=20
     )
     birthdate = models.DateField(
         auto_now=False, auto_now_add=False,
@@ -176,14 +176,25 @@ class User(AbstractUser):
         else:
             self.is_active = False
 
+        # Get the Permission object
+        permission = Permission.objects.get(codename='coach')
+
+        if self.is_coach:
+            # If the user is a coach, add the coach permission
+            self.user_permissions.add(permission)
+            # A coach does not have a coach. If a coach is set, it is unset
+            self.coach = None
+        else:
+            self.user_permissions.remove(permission)
+
         super(User, self).save(*args, **kwargs)
 
     panels = [
         FieldPanel('username'),
         FieldPanel('is_staff'),
+        FieldPanel('is_coach'),
         FieldPanel('is_customer'),
         FieldPanel('verified'),
-        FieldPanel('is_coach'),
         FieldPanel('coach'),
         FieldPanel('title'),
         FieldPanel('first_name'),
@@ -218,3 +229,10 @@ class User(AbstractUser):
                 r_string += " " + self.email
 
         return r_string
+
+
+    class Meta:
+        # This are custom user permissions in the format "codename": "name"
+        permissions = [
+            ("coach", "The user is a coach"),
+        ]

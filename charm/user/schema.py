@@ -1,7 +1,7 @@
 import graphene
 
 from graphene_django.types import DjangoObjectType
-from graphql_jwt.decorators import staff_member_required, login_required
+from graphql_jwt.decorators import permission_required, login_required
 
 from django.contrib.auth import get_user_model
 
@@ -57,19 +57,19 @@ class Query(graphene.AbstractType):
         token=graphene.String(required=False)
     )
 
-    @staff_member_required
+    @permission_required('user.coach')
     def resolve_user_all(self, info, **_kwargs):
         return get_user_model().objects.all()
 
-    @staff_member_required
+    @permission_required('user.coach')
     def resolve_user_by_id(self, info, id, **_kwargs):
         return get_user_model().objects.get(id=id)
 
-    @staff_member_required
+    @permission_required('user.coach')
     def resolve_user_by_phone(self, info, phone, **_kwargs):
         return get_user_model().objects.get(telephone=phone)
 
-    @staff_member_required
+    @permission_required('user.coach')
     def resolve_user_by_name(self, info, username, **_kwargs):
         return get_user_model().objects.get(username=username)
 
