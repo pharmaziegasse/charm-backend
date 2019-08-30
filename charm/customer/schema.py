@@ -9,32 +9,36 @@ from .models import Customer
 
 class CustomerType(DjangoObjectType):
     class Meta:
+        model = Customer
+
+class CustomerQType(DjangoObjectType):
+    class Meta:
         model = get_user_model()
 
 class Query(graphene.AbstractType):
     # Returns all Customeres
     customer_all = graphene.List(
-        CustomerType,
+        CustomerQType,
         token=graphene.String(required=False)
     )
     
     # Returns a single Customer object based on given id
     customer_by_id = graphene.Field(
-        CustomerType,
+        CustomerQType,
         token=graphene.String(required=False),
         id=graphene.Int(required=True)
     )
     
     # Returns a single Customer object with given phone number
     customer_by_phone = graphene.Field(
-        CustomerType,
+        CustomerQType,
         token=graphene.String(required=False),
         phone=graphene.String(required=True)
     )
 
     # Returns a single Customer object with given username
     customer_by_name = graphene.Field(
-        CustomerType,
+        CustomerQType,
         token=graphene.String(required=False),
         username=graphene.String(required=True)
     )

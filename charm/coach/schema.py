@@ -9,32 +9,36 @@ from .models import Coach
 
 class CoachType(DjangoObjectType):
     class Meta:
+        model = Coach
+
+class CoachQType(DjangoObjectType):
+    class Meta:
         model = get_user_model()
 
 class Query(graphene.AbstractType):
     # Returns all coaches
     coach_all = graphene.List(
-        CoachType,
+        CoachQType,
         token=graphene.String(required=False)
     )
     
     # Returns a single coach object based on given id
     coach_by_id = graphene.Field(
-        CoachType,
+        CoachQType,
         token=graphene.String(required=False),
         id=graphene.Int(required=True)
     )
     
     # Returns a single coach object with given phone number
     coach_by_phone = graphene.Field(
-        CoachType,
+        CoachQType,
         token=graphene.String(required=False),
         phone=graphene.String(required=True)
     )
 
     # Returns a single coach object with given username
     coach_by_name = graphene.Field(
-        CoachType,
+        CoachQType,
         token=graphene.String(required=False),
         username=graphene.String(required=True)
     )
