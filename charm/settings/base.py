@@ -107,6 +107,7 @@ GRAPHQL_JWT = {
 
 GRAPHQL_API = {
     'APPS': [
+        'user',
         'home',
         'reports',
         'anamnese',

@@ -4,6 +4,9 @@
 # We use uuid to generate a unique username, as Charm's customers are identified by a field other than the username.
 import uuid
 
+# Json for the form data
+import json
+
 # This returns the currently active user model
 from django.contrib.auth import get_user_model
 
@@ -17,9 +20,15 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 # ValidationError is used to raise our custom errors through the clean() method
 from django.core.exceptions import ValidationError
 
+# JSON Encoder
+from django.core.serializers.json import DjangoJSONEncoder
+
 from django.db import models
 
-from wagtail.admin.edit_handlers import FieldPanel
+from modelcluster.fields import ParentalKey
+
+from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
+from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField, AbstractFormSubmission
 
 # extend AbstractUser Model from django.contrib.auth.models
 class User(AbstractUser):
@@ -33,7 +42,7 @@ class User(AbstractUser):
     )
     is_staff = models.BooleanField(
         default=False,
-        help_text='Establish if the user is a staff member.',
+        help_text='Establish if the user is a staff member.'
     )
     is_customer = models.BooleanField(
         blank=False, default=True,
@@ -49,7 +58,7 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         help_text='Select the user\'s coach'
     )
-    # A secondary "backup" coach is planned to be added later.
+    # A secondary "backup" coach is planned to be added later. (post-v1.0.0)
     # https://github.com/pharmaziegasse/charm-backend/issues/10
     # secondary_coach = models.CharField(
     #     null=True, blank=True,
@@ -236,3 +245,46 @@ class User(AbstractUser):
         permissions = [
             ("coach", "The user is a coach"),
         ]
+
+
+class FormField(AbstractFormField):
+   page = ParentalKey('FormPage', on_delete=models.CASCADE, related_name='form_fields')
+
+class FormPage(AbstractEmailForm):
+    content_panels = AbstractEmailForm.content_panels + [
+        MultiFieldPanel(
+            [
+                InlinePanel('form_fields', label="User form fields")
+            ],
+            heading="Form Fields",
+        )
+    ]
+
+    def get_submission_class(self):
+        return UserFormSubmission
+
+    def create_user(self, date, user, form_data):
+        user = User(
+            date = date,
+            user = user,
+            form_data = form_data
+        )
+
+        user.save()
+
+        return user
+
+    def process_form_submission(self, form):
+        user = self.create_user(
+            user = get_user_model().objects.get(id=form.cleaned_data['uid']),
+            form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
+        )
+
+        self.get_submission_class().objects.create(
+            form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
+            page = self,
+            user = user,
+        )
+
+class UserFormSubmission(AbstractFormSubmission):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
