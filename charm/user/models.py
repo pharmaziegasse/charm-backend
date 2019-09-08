@@ -248,9 +248,9 @@ class User(AbstractUser):
 
 
 class FormField(AbstractFormField):
-   page = ParentalKey('FormPage', on_delete=models.CASCADE, related_name='form_fields')
+   page = ParentalKey('UserFormPage', on_delete=models.CASCADE, related_name='form_fields')
 
-class FormPage(AbstractEmailForm):
+class UserFormPage(AbstractEmailForm):
     content_panels = AbstractEmailForm.content_panels + [
         MultiFieldPanel(
             [
@@ -263,11 +263,22 @@ class FormPage(AbstractEmailForm):
     def get_submission_class(self):
         return UserFormSubmission
 
-    def create_user(self, date, user, form_data):
+    def create_user(
+        self,
+        coach_id,
+        first_name,
+        last_name,
+        telephone,
+        email,
+        registration_data):
         user = User(
-            date = date,
-            user = user,
-            form_data = form_data
+            id = User.objects.latest('id').id + 1,
+            first_name = first_name,
+            last_name = last_name,
+            telephone = telephone,
+            email = email,
+            coach = User.objects.get(id=coach_id),
+            registration_data = registration_data
         )
 
         user.save()
@@ -276,8 +287,12 @@ class FormPage(AbstractEmailForm):
 
     def process_form_submission(self, form):
         user = self.create_user(
-            user = get_user_model().objects.get(id=form.cleaned_data['uid']),
-            form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
+            first_name = form.cleaned_data['first_name'],
+            last_name = form.cleaned_data['last_name'],
+            telephone = form.cleaned_data['telephone'],
+            email = form.cleaned_data['email'],
+            coach_id = form.cleaned_data['coach_id'],
+            registration_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
         )
 
         self.get_submission_class().objects.create(
