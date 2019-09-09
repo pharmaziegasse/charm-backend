@@ -4,6 +4,9 @@
 # We use uuid to generate a unique username, as Charm's customers are identified by a field other than the username.
 import uuid
 
+# Json for the form data
+import json
+
 # This returns the currently active user model
 from django.contrib.auth import get_user_model
 
@@ -17,9 +20,15 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 # ValidationError is used to raise our custom errors through the clean() method
 from django.core.exceptions import ValidationError
 
+# JSON Encoder
+from django.core.serializers.json import DjangoJSONEncoder
+
 from django.db import models
 
-from wagtail.admin.edit_handlers import FieldPanel
+from modelcluster.fields import ParentalKey
+
+from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
+from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField, AbstractFormSubmission
 
 # extend AbstractUser Model from django.contrib.auth.models
 class User(AbstractUser):
@@ -33,7 +42,7 @@ class User(AbstractUser):
     )
     is_staff = models.BooleanField(
         default=False,
-        help_text='Establish if the user is a staff member.',
+        help_text='Establish if the user is a staff member.'
     )
     is_customer = models.BooleanField(
         blank=False, default=True,
@@ -49,7 +58,7 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         help_text='Select the user\'s coach'
     )
-    # A secondary "backup" coach is planned to be added later.
+    # A secondary "backup" coach is planned to be added later. (post-v1.0.0)
     # https://github.com/pharmaziegasse/charm-backend/issues/10
     # secondary_coach = models.CharField(
     #     null=True, blank=True,
@@ -207,7 +216,7 @@ class User(AbstractUser):
         FieldPanel('postal_code'),
         FieldPanel('country'),
         FieldPanel('newsletter'),
-        #FieldPanel('registration_data'),
+        FieldPanel('registration_data'),
     ]
 
     def __str__(self):
@@ -236,3 +245,94 @@ class User(AbstractUser):
         permissions = [
             ("coach", "The user is a coach"),
         ]
+
+
+class FormField(AbstractFormField):
+   page = ParentalKey('UserFormPage', on_delete=models.CASCADE, related_name='form_fields')
+
+class UserFormPage(AbstractEmailForm):
+    content_panels = AbstractEmailForm.content_panels + [
+        MultiFieldPanel(
+            [
+                InlinePanel('form_fields', label="User form fields")
+            ],
+            heading="Form Fields",
+        )
+    ]
+
+    def get_submission_class(self):
+        return UserFormSubmission
+
+    def create_user(
+        self,
+        coach_id,
+        first_name,
+        last_name,
+        telephone,
+        email,
+        title,
+        birthdate,
+        address,
+        city,
+        postal_code,
+        country,
+        newsletter,
+        registration_data):
+        user = User(
+            # Next unused ID
+            id = User.objects.latest('id').id + 1,
+
+            # Required fields
+            first_name = first_name,
+            last_name = last_name,
+            telephone = telephone,
+            email = email,
+            coach = User.objects.get(id=coach_id),
+
+            # Optional fields
+            title = title,
+            birthdate = birthdate,
+            address = address,
+            city = city,
+            postal_code = postal_code,
+            country = country,
+            newsletter = newsletter,
+
+            # Raw data
+            registration_data = registration_data
+        )
+
+        user.save()
+
+        return user
+
+    def process_form_submission(self, form):
+        user = self.create_user(
+            # Required fields
+            first_name = form.cleaned_data['first_name'],
+            last_name = form.cleaned_data['last_name'],
+            telephone = form.cleaned_data['telephone'],
+            email = form.cleaned_data['email'],
+            coach_id = form.cleaned_data['coach_id'], # Just the ID as an Integer
+
+            # Optional fields
+            title = form.cleaned_data['title'],
+            birthdate = form.cleaned_data['birthdate'], # format YYYY-MM-DD or MM/DD/YY its really flexible
+            address = form.cleaned_data['address'],
+            city = form.cleaned_data['city'],
+            postal_code = form.cleaned_data['postal_code'],
+            country = form.cleaned_data['country'], # pls send 2 digit country code
+            newsletter = form.cleaned_data['newsletter'], # Boolean
+
+            # Raw data
+            registration_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
+        )
+
+        self.get_submission_class().objects.create(
+            form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
+            page = self,
+            user = user,
+        )
+
+class UserFormSubmission(AbstractFormSubmission):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
