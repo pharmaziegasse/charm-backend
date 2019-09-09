@@ -216,7 +216,7 @@ class User(AbstractUser):
         FieldPanel('postal_code'),
         FieldPanel('country'),
         FieldPanel('newsletter'),
-        #FieldPanel('registration_data'),
+        FieldPanel('registration_data'),
     ]
 
     def __str__(self):
@@ -270,14 +270,35 @@ class UserFormPage(AbstractEmailForm):
         last_name,
         telephone,
         email,
+        title,
+        birthdate,
+        address,
+        city,
+        postal_code,
+        country,
+        newsletter,
         registration_data):
         user = User(
+            # Next unused ID
             id = User.objects.latest('id').id + 1,
+
+            # Required fields
             first_name = first_name,
             last_name = last_name,
             telephone = telephone,
             email = email,
             coach = User.objects.get(id=coach_id),
+
+            # Optional fields
+            title = title,
+            birthdate = birthdate,
+            address = address,
+            city = city,
+            postal_code = postal_code,
+            country = country,
+            newsletter = newsletter,
+
+            # Raw data
             registration_data = registration_data
         )
 
@@ -287,11 +308,23 @@ class UserFormPage(AbstractEmailForm):
 
     def process_form_submission(self, form):
         user = self.create_user(
+            # Required fields
             first_name = form.cleaned_data['first_name'],
             last_name = form.cleaned_data['last_name'],
             telephone = form.cleaned_data['telephone'],
             email = form.cleaned_data['email'],
-            coach_id = form.cleaned_data['coach_id'],
+            coach_id = form.cleaned_data['coach_id'], # Just the ID as an Integer
+
+            # Optional fields
+            title = form.cleaned_data['title'],
+            birthdate = form.cleaned_data['birthdate'], # format YYYY-MM-DD or MM/DD/YY its really flexible
+            address = form.cleaned_data['address'],
+            city = form.cleaned_data['city'],
+            postal_code = form.cleaned_data['postal_code'],
+            country = form.cleaned_data['country'], # pls send 2 digit country code
+            newsletter = form.cleaned_data['newsletter'], # Boolean
+
+            # Raw data
             registration_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
         )
 
