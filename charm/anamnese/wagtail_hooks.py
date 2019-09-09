@@ -4,9 +4,9 @@ from .models import Anamnese
 
 class AnamneseAdmin(ModelAdmin):
     model = Anamnese
-    menu_label = "Anamnese"
-    menu_icon = "mail"
-    menu_order = 300
+    menu_label = "Anamneses"
+    menu_icon = "form"
+    menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
    
@@ -18,4 +18,5 @@ class AnamneseAdmin(ModelAdmin):
 
     search_fields = list_display
 
-modeladmin_register(AnamneseAdmin)
+# This gets registered with the ModelAdminGroup in the Beautyreport app
+# modeladmin_register(AnamneseAdmin)

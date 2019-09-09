@@ -9,9 +9,9 @@ from .models import User
 
 class UserAdmin(ModelAdmin):
     model = User
-    menu_label = "User"
-    menu_icon = "user"
-    menu_order = 290
+    menu_label = "User data"
+    menu_icon = "doc-full"
+    menu_order = 100
     add_to_settings_menu = False
     exclude_from_explorer = False
    
@@ -27,4 +27,5 @@ class UserAdmin(ModelAdmin):
 
     search_fields = list_display
 
-modeladmin_register(UserAdmin)
+# This gets registered with the ModelAdminGroup in the Beautyreport app
+# modeladmin_register(UserAdmin)

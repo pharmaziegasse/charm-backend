@@ -4,9 +4,9 @@ from .models import Coach
 
 class CoachAdmin(ModelAdmin):
     model = Coach
-    menu_label = "Coach"
+    menu_label = "Coaches"
     menu_icon = "user"
-    menu_order = 290
+    menu_order = 120
     add_to_settings_menu = False
     exclude_from_explorer = False
    
