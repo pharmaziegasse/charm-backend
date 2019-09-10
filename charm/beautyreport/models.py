@@ -1,4 +1,7 @@
 import json
+
+from charm.coach.models import Coach
+
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
@@ -11,7 +14,6 @@ from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField, AbstractFormSubmission
 
-
 class FormField(AbstractFormField):
    page = ParentalKey('BrFormPage', on_delete=models.CASCADE, related_name='form_fields')
 
@@ -23,6 +25,12 @@ class Beautyreport(models.Model):
     user = models.ForeignKey(
         get_user_model(), null=True,
         on_delete=models.SET_NULL
+    )
+    # To identify which coach created this beautyreport
+    coach = models.ForeignKey(
+        Coach, null=True,
+        on_delete=models.SET_NULL,
+        related_name='Coach_BR'
     )
     form_data = models.TextField(
         null=True, blank=True
@@ -44,10 +52,11 @@ class BrFormPage(AbstractEmailForm):
     def get_submission_class(self):
         return BeautyreportFormSubmission
 
-    def create_br(self, date, user, form_data):
+    def create_br(self, date, user, coach, form_data):
         br = Beautyreport(
             date = date,
             user = user,
+            coach = coach,
             form_data = form_data
         )
 
@@ -61,6 +70,7 @@ class BrFormPage(AbstractEmailForm):
         br = self.create_br(
             date = today.strftime("%Y-%m-%d %H:%M:%S"),
             user = get_user_model().objects.get(id=form.cleaned_data['uid']),
+            coach = form.user,
             form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
         )
 

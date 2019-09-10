@@ -52,19 +52,19 @@ class Query(graphene.AbstractType):
     )
 
     @permission_required('user.coach')
-    def resolve_ab_all(self, info, **_kwargs):
+    def resolve_br_all(self, info, **_kwargs):
         return Beautyreport.objects.all()
 
     @permission_required('user.coach')
-    def resolve_ab_by_id(self, info, id, **_kwargs):
+    def resolve_br_by_id(self, info, id, **_kwargs):
         return Beautyreport.objects.get(id=id)
 
     @permission_required('user.coach')
-    def resolve_ab_by_uid(self, info, uid, **_kwargs):
+    def resolve_br_by_uid(self, info, uid, **_kwargs):
         return Beautyreport.objects.filter(user=get_user_model().objects.get(id=uid))
 
     @permission_required('user.coach')
-    def resolve_ab_latest_by_uid(self, info, uid, **_kwargs):
+    def resolve_br_latest_by_uid(self, info, uid, **_kwargs):
         return Beautyreport.objects.filter(user=get_user_model().objects.get(id=uid)).latest()
 
     @login_required
