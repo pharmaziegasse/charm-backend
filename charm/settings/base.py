@@ -25,6 +25,7 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 INSTALLED_APPS = [
     # These are our custom written apps.
+    'charm.core',
     'charm.api',
     'charm.home',
     'charm.reports',

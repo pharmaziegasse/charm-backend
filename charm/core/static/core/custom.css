@@ -1,0 +1,237 @@
+header {
+    background: #c59ac2;  /* 4c7fa7 */
+  }
+  
+  a {
+    color: #c59ac2;
+  }
+  
+  a:hover {
+    color: #3d2a4a; /* 2a3c4a */
+  }
+  
+  .button {
+    background-color: #c59ac2;
+    border: 1px solid #c59ac2;
+  }
+  
+  .button:hover {
+    background-color: #3d2a4a;
+    border-color: transparent;
+  }
+  
+  .button-secondary {
+    color: #c59ac2;
+    background-color: transparent;
+  }
+  
+  .button.disabled,
+  .button:disabled,
+  .button[disabled] {
+    background-color: #d9d9d9;
+    border-color: #d9d9d9;
+    color: #737373;
+  }
+  
+  input[type="submit"] {
+    background-color: #c59ac2;
+    border-color: #c59ac2;
+  }
+  
+  input[type="submit"]:hover {
+    background-color: #3d2a4a;
+    border-color: transparent;
+    color: #ffffff;
+  }
+  
+  .dropdown .dropdown-toggle {
+    background-color: #c59ac2;
+  }
+  
+  .dropdown .dropdown-toggle:hover,
+  .dropdown.open .dropdown-toggle {
+    background-color: #3d2a4a;
+  }
+  
+  header .button {
+    background-color: #3d2a4a;
+  }
+  
+  header .button:hover {
+    background-color: #36223f; /* 36223f */
+  }
+  
+  .tab-nav a {
+    background-color: #3d2a4a;
+    border-top: 0.3em solid #3d2a4a;
+  }
+  
+  .tab-nav a:hover {
+    border-top: 0.3em solid #290041; /* 003f41 */
+  }
+  
+  .tab-nav.merged {
+    background-color: #c59ac2;
+  }
+  
+  .button.yes {
+    background-color: #189370;
+    border: 1px solid #189370;
+  }
+  
+  .button.yes:hover {
+    color: #ffffff;
+    border-color: transparent;
+    background-color: #127055;
+  }
+  
+  .t-inverted .u-btn-current {
+    border-color: rgba(0, 0, 0, 0.35);
+  }
+  
+  .breadcrumb li a:after,
+  .breadcrumb li span:after {
+    color: #3d2a4a;
+  }
+  
+  .breadcrumb li:hover {
+    background: #36223f;
+  }
+  
+  @media screen and (min-width: 50em) {
+    .breadcrumb {
+      background-color: #6d5a7b;
+    }
+  }
+  
+  .progress .bar {
+    background-color: #c59ac2;
+  }
+  
+  .progress {
+    background-color: #36223f;
+    border: 1px solid #c59ac2;
+  }
+  
+  .loading-mask.loading:after {
+    color: #c59ac2;
+  }
+  
+  .listing.chooser tbody tr:hover {
+    background-color: #c59ac2;
+  }
+  
+  input[type="radio"]:checked:before {
+    color: #c59ac2;
+  }
+  
+  input[type="checkbox"]:checked:before {
+    color: #c59ac2;
+  }
+  
+  .page-explorer .listing .index {
+    background-color: #c59ac2;
+  }
+  
+  .page-explorer .listing .index .button.bicolor {
+    background-color: #c59ac2;
+  }
+  
+  .page-explorer .listing .index .button:hover {
+    background-color: #3d2a4a;
+    border-color: transparent;
+  }
+  
+  .t-inverted .u-btn-current:hover {
+    background-color: #3d2a4a;
+    border-color: rgba(0, 0, 0, 0.35);
+  }
+  
+  .t-default .u-btn-current {
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #c59ac2;
+  }
+  
+  .t-default .u-btn-current:hover {
+    background-color: #3d2a4a;
+    border-color: rgba(0, 0, 0, 0.35);
+  }
+  
+  .listing .button-secondary:hover {
+    background-color: #3d2a4a;
+    border-color: transparent;
+  }
+  
+  .listing .title h2 a:hover {
+    color: #3d2a4a;
+  }
+
+  .object>h2 {
+    background: #faf2fc !important;
+  }
+
+  .object>h2 label:before,
+  .object>h2:before {
+    background-color: #3d2a4a !important;
+  }
+  
+  .sequence-controls h3 label {
+    color: #3d2a4a;
+  }
+  
+  @media screen and (min-width: 50em) {
+    .listing td.children:hover {
+      background-color: #3d2a4a;
+    }
+  }
+  
+  .listing .children a {
+    color: #3d2a4a;
+    display: block;
+  }
+  
+  @media screen and (min-width: 50em) {
+    .listing tr:hover .children {
+      background-color: #c59ac2;
+    }
+  }
+  
+  /*
+  .halloeditor:focus,
+  .tagit:focus,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #eff4f8;
+    background-color: #f3eff2;
+  }
+  
+  .full .Draftail-Editor--focus {
+    background-color: #eff4f8;
+    border-color: #3d2a4a;
+  }
+  
+  li.sequence-member:hover {
+    background-color: #f2f2f3;
+    border-color: #c59ac2;
+  }
+  
+  .listing .no-children a:hover {
+    color: #c59ac2;
+  }
+  
+  */
+  
+  .dropdown ul {
+    background-color: #c59ac2;
+  }
+  
+  .dropdown ul a:hover {
+    background-color: #3d2a4a;
+  }
+  
+  .icon-bin {
+    background-color: #cd3238;
+    border: 1px solid #cd3238;
+  }
+  
