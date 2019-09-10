@@ -13,6 +13,7 @@ class AnamneseAdmin(ModelAdmin):
     # Listed in the customer overview
     list_display = (
         'user',
+        'coach',
         'form_data'
         )
 
