@@ -38,9 +38,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
-# BASE_URL required for notification emails
-BASE_URL = 'https://charm.pharmaziegasse.at'
-
 CSRF_TRUSTED_ORIGINS = ['charm.pharmaziegasse.at']
 
 db_from_env = dj_database_url.config(conn_max_age=500)
