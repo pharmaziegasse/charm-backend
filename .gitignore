@@ -16,6 +16,10 @@ __pycache__/
 # Fonts
 *.ttf
 
+# Documents
+*.docx
+*.pdf
+
 ### DB
 *.sqlite3
 
