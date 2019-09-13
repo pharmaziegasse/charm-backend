@@ -57,7 +57,7 @@ class Query(
     charm.beautyreport.schema.Query,
     graphene.ObjectType,
     #AuthQueryMixin_,
-    #DocumentQueryMixin_,
+    DocumentQueryMixin_,
     ImageQueryMixin_,
     InfoQueryMixin_,
     #MenusQueryMixin_,
