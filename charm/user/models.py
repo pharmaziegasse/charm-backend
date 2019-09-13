@@ -185,7 +185,9 @@ class User(AbstractUser):
         else:
             self.is_active = False
 
-        # Get the Permission object
+        super(User, self).save(*args, **kwargs)
+
+        # Get the coach permission object
         permission = Permission.objects.get(codename='coach')
 
         if self.is_coach:
@@ -196,7 +198,6 @@ class User(AbstractUser):
         else:
             self.user_permissions.remove(permission)
 
-        super(User, self).save(*args, **kwargs)
 
     panels = [
         FieldPanel('username'),
