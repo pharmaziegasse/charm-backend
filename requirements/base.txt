@@ -3,6 +3,8 @@ wagtail>=2.5,<2.6
 wagtailfontawesome>=1.1.4,<1.2
 Pillow==4.0.0
 Jinja2==2.10.1
+libxml2>=2.9.2
+libxslt>=1.1.28
 python-docx==0.8.10
 graphene-django==2.2
 graphene_django_optimizer==0.3.6
