@@ -44,6 +44,8 @@ RUN echo "## Installing base ##" && \
 		postgresql-dev \
 		libjpeg-turbo-dev \
 		zlib-dev \
+		libxml2-dev \
+		libxslt-dev \
 	; \
 	apk add --force \
 	    git@main \
