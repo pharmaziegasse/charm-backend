@@ -27,3 +27,4 @@ __pycache__/
 .env
 dev-venv
 win-devenv
+windows-venv
