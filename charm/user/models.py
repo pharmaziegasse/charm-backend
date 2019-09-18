@@ -222,6 +222,7 @@ class User(AbstractUser):
         FieldPanel('postal_code'),
         FieldPanel('country'),
         FieldPanel('newsletter'),
+        FieldPanel('activation_url'),
         FieldPanel('registration_data'),
     ]
 
