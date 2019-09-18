@@ -17,4 +17,3 @@ django-redis==4.8.0
 django_cache_url==2.0.0
 # For copying initial media to S3 bucket
 awscli==1.16.43
-xhtml2pdf==0.2.1
