@@ -121,7 +121,8 @@ class Beautyreport(models.Model):
         data = json.loads(raw_data)
 
         # Initialize a new document
-        document = Document("template.docx")
+        # document = Document("template.docx")
+        document = Document()
 
         '''
         # Get default document styles
