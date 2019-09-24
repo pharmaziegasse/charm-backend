@@ -48,6 +48,10 @@ class User(AbstractUser):
         blank=False, default=True,
         help_text='Establish if the user is a customer'
     )
+    customer_id = models.CharField(
+        null=True, blank=True,
+        help_text="Kundennummer", max_length=36 
+    )
     is_coach = models.BooleanField(
         blank=False, default=False,
         help_text='Establish if the user is a coach'
@@ -204,6 +208,7 @@ class User(AbstractUser):
         FieldPanel('is_staff'),
         FieldPanel('is_coach'),
         FieldPanel('is_customer'),
+        FieldPanel('customer_id'),
         FieldPanel('verified'),
         FieldPanel('coach'),
         FieldPanel('title'),
@@ -217,6 +222,7 @@ class User(AbstractUser):
         FieldPanel('postal_code'),
         FieldPanel('country'),
         FieldPanel('newsletter'),
+        FieldPanel('activation_url'),
         FieldPanel('registration_data'),
     ]
 
@@ -266,6 +272,7 @@ class UserFormPage(AbstractEmailForm):
 
     def create_user(
         self,
+        customer_id,
         coach_id,
         first_name,
         last_name,
@@ -291,6 +298,7 @@ class UserFormPage(AbstractEmailForm):
             coach = User.objects.get(id=coach_id),
 
             # Optional fields
+            customer_id = customer_id,
             title = title,
             birthdate = birthdate,
             address = address,
@@ -317,6 +325,7 @@ class UserFormPage(AbstractEmailForm):
             coach_id = form.cleaned_data['coach_id'], # Just the ID as an Integer
 
             # Optional fields
+            customer_id = form.cleaned_data['customer_id'],
             title = form.cleaned_data['title'],
             birthdate = form.cleaned_data['birthdate'], # format YYYY-MM-DD or MM/DD/YY its really flexible
             address = form.cleaned_data['address'],

@@ -10,6 +10,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 from django.db import models
 
+from django.utils import timezone
+
 from modelcluster.fields import ParentalKey
 
 from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
@@ -66,11 +68,53 @@ class AnFormPage(AbstractEmailForm):
         return an
 
     def process_form_submission(self, form):
-        today = datetime.today()
+        user = get_user_model().objects.get(id=form.cleaned_data['uid'])
+     
+        user_data = {}
+
+        user_data['first_name'] = user.first_name
+        user_data['last_name'] = user.last_name
+        user_data['telephone'] = user.telephone
+        user_data['email'] = user.email
+        if user.coach:
+            user_data['coach_first_name'] = user.coach.first_name
+            user_data['coach_last_name'] = user.coach.last_name
+            user_data['coach_telephone'] = user.coach.telephone
+            user_data['coach_email'] = user.coach.email
+            if user.coach.title:
+                user_data['coach_title'] = user.coach.title
+            if user.coach.birthdate:
+                user_data['coach_birthdate'] = user.coach.birthdate
+            if user.coach.address:
+                user_data['coach_address'] = user.coach.address
+            if user.coach.city:
+                user_data['coach_city'] = user.coach.city
+            if user.coach.postal_code:
+                user_data['coach_postal_code'] = user.coach.postal_code
+            if user.coach.country:
+                user_data['coach_country'] = user.coach.country
+        if user.title:
+            user_data['title'] = user.title
+        if user.birthdate:
+            user_data['birthdate'] = user.birthdate
+        if user.address:
+            user_data['address'] = user.address
+        if user.city:
+            user_data['city'] = user.city
+        if user.postal_code:
+            user_data['postal_code'] = user.postal_code
+        if user.country:
+            user_data['country'] = user.country
+        user_data['newsletter'] = user.newsletter
+
+        form.cleaned_data.update(user_data)
+
+        today = datetime.now()
+        timezone.make_aware(today)
 
         an = self.create_an(
             date = today.strftime("%Y-%m-%d %H:%M:%S"),
-            user = get_user_model().objects.get(id=form.cleaned_data['uid']),
+            user = user,
             coach = form.user,
             form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
         )

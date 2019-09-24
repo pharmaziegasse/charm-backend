@@ -17,9 +17,9 @@ class Coach(User):
     # Panels/fields to fill in the Add Customer form
     panels = [
         FieldPanel('username'),
-        FieldPanel('verified'),
         FieldPanel('is_customer'),
         FieldPanel('is_coach'),
+        FieldPanel('is_staff'),
         FieldPanel('title'),
         FieldPanel('first_name'),
         FieldPanel('last_name'),
