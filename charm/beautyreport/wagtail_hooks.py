@@ -14,8 +14,7 @@ class BeautyreportLinks(ModelAdmin):
     menu_order = 300
 
     list_display = (
-        'beautyreport',
-        'link'
+        'link',
     )
 
 class BeautyreportAdmin(ModelAdmin):
