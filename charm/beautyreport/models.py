@@ -233,6 +233,8 @@ class Beautyreport(models.Model):
             if br_obj.beautyreport == self:
                 br_obj.delete()
 
+        super(Beautyreport, self).save(*args, **kwargs)
+
         blinkcollection = BeautyreportDocument(
             beautyreport=self,
             link=path
@@ -251,9 +253,6 @@ class Beautyreport(models.Model):
                 %s, 1, 'placeholder')",
                 [self.user.first_name, self.user.last_name, today.strftime("%d.%m.%Y"), document_path, self.coach.id])
         '''
-
-
-        super(Beautyreport, self).save(*args, **kwargs)
 
     class Meta:
         get_latest_by = "date"
