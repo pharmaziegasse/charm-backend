@@ -1,4 +1,5 @@
 import json
+import os
 
 from datetime import datetime
 
@@ -9,6 +10,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 from django.db import connection, models
 
+from django.conf import settings
 from django.utils import timezone
 
 # DOCX or python-docx is used to create and save the Beautyreport as a Word document
@@ -62,7 +64,7 @@ class DocumentHTMLParser(HTMLParser):
         self.run = self.paragraph.add_run()
 
     def handle_data(self, data):
-        self.run.font.size = Pt(13)
+        self.run.font.size = Pt(12)
         self.run.font.name = "Oxfam TSTAR PRO"
         self.paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         self.run.add_text(data)
@@ -75,6 +77,16 @@ class DocumentHTMLParser(HTMLParser):
 
     # def handle_data(self, data):
     #     print("Encountered some data  :", data)
+
+class BeautyreportDocument(models.Model):
+    beautyreport = models.ForeignKey(
+        "Beautyreport", null=True,
+        on_delete=models.SET_NULL
+    )
+    link = models.CharField(
+        null=True, blank=True,
+        max_length=256
+    )
 
 class FormField(AbstractFormField):
    page = ParentalKey('BrFormPage', on_delete=models.CASCADE, related_name='form_fields')
@@ -94,6 +106,12 @@ class Beautyreport(models.Model):
         on_delete=models.SET_NULL,
         related_name='Coach_BR'
     )
+    document = models.ForeignKey(
+        BeautyreportDocument,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='Document_BR'
+    )
     # docx_url = models.CharField(
     #     null=True, blank=True,
     #     max_length=128
@@ -110,6 +128,14 @@ class Beautyreport(models.Model):
         if not self.date:
             self.date = today
 
+
+        '''
+        Here starts the Beautyreport generation part.
+        As this is a pretty complex part, it should be split up later.
+
+        Current version: 1.1.0, 10/2/2019
+        '''
+
         # Get the raw form data which got generated out of the submitted anamnese form page
         # json.loads converts it to a dictionary
         content = json.loads(self.form_data)
@@ -121,8 +147,8 @@ class Beautyreport(models.Model):
         data = json.loads(raw_data)
 
         # Initialize a new document
-        # document = Document("template.docx")
-        document = Document()
+        document = Document("media/template.docx")
+        # document = Document()
 
         
         # Get default document styles
@@ -151,81 +177,9 @@ class Beautyreport(models.Model):
 
         # document.save("template.docx")
 
-        '''
-        # This is a try at translating html myself
-        def add_bold(string, p):
-            string = string.partition("<b>")
-            p.add_run(string[0])
-            string = string[2].partition("</b>")
-            bold_text = p.add_run(string[0])
-            bold_text.bold = True
-        
-            string_i = bold_text
-            while True:
-                istr = string[0].find("<i>")
-                if istr is not -1:
-                    string_i = string_i.partition("<i>")
-                    # string_i = string_i[]
-                    bold_text.italic = True
-                break
+        last_run_identifier = len(data) - 1
 
-            string = string[2]
-            return string
-        
-        def add_italic(string, p):
-            string = string.partition("<i>")
-            p.add_run(string[0])
-            string = string[2].partition("</i>")
-            p.add_run(string[0]).italic = True
-            string = string[2]
-            return string
-
-
-        def translate_html(document, html):
-            p_start = "<p>"
-            p_end = "</p>"
-
-            paragraph = html
-
-            while True:
-                p = document.add_paragraph()
-
-                paragraph_cache = paragraph.partition(p_start)[2]
-                paragraph = paragraph_cache.partition(p_end)[0]
-
-                string = paragraph
-
-                while True:
-                    bstr = string.find("<b>")
-                    istr = string.find("<i>")
-
-                    if bstr is not -1 or istr is not -1:
-                        if bstr is not -1 and istr is -1:
-                            string = add_bold(string, p)
-                        if bstr is -1 and istr is not -1:
-                            string = add_italic(string, p)
-                        if bstr is not -1 and istr is not -1:
-                            if bstr < istr:
-                                string = add_bold(string, p)
-                            elif istr < bstr:
-                                string = add_italic(string, p)
-                    else:
-                        p.add_run(string)
-                        break
-
-                if paragraph_cache.partition(p_start)[1] is not "<p>":
-                    break
-
-                paragraph = paragraph_cache
-            
-            # text = html
-            # text = text.replace("</p><p>", "\r")
-            # text = text.replace("<p>", "")
-            # text = text.replace("</p>", "")
-            return document
-        '''
-
-        for ka in data:
+        for count, ka in enumerate(data):
             print("**** Word Debugging ****")
             print("*** Chapter:")
             print(data[ka])
@@ -261,41 +215,48 @@ class Beautyreport(models.Model):
                                 pass
             # Page break after main chapter
             lb = document.add_paragraph()
-            lb.add_run().add_break(WD_BREAK.PAGE)
+            if not count == last_run_identifier:
+                lb.add_run().add_break(WD_BREAK.PAGE)
 
+        try:
+            nid = BeautyreportDocument.objects.latest('id').id
+        except:
+            nid = 0
 
-
-        # '''
-
-        # n = 0
-        # while True:
-        #     try:
-        #         document.add_heading(data[str('chapter' + str(n))]['chapterHeader'], level=1)
-        #         n1 = 0
-        #         while True:
-        #             try:
-        #                 n2 = 0
-        #                 while True:
-        #                     try:
-        #                         document.add_paragraph(data[str('chapter' + str(n))][str('subchapter' + str(n1))][str('paragraph' + str(n2))]['text'])
-        #                         n2 = n2 + 1
-        #                     except:
-        #                         break
-        #                 n1 = n1 + 1
-        #             except:
-        #                 break
-        #         n = n + 1
-        #     except:
-        #         break
-
-
-        document_path = 'documents/Beautyreport-' \
+        document_name = 'Beautyreport-' \
             + self.user.first_name + '-' \
             + today.strftime("%Y-%m-%d") + '-' \
-            + str(Beautyreport.objects.latest('id').id + 1) + '.docx'
+            + str(nid) + '.docx'
 
-        document.save('media/' + document_path)
+        directory = settings.BR_DOCUMENT_PATH
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
+        path = directory + document_name
+
+        document.save(path)
+
+        '''
+        End of Beautyreport generation.
+        '''
+
+        for br_obj in BeautyreportDocument.objects.all():
+            print(br_obj.beautyreport)
+            if br_obj.beautyreport == self:
+                br_obj.delete()
+
+        super(Beautyreport, self).save(*args, **kwargs)
+
+        blinkcollection = BeautyreportDocument(
+            beautyreport=self,
+            link=path
+        )
+
+        blinkcollection.save()
+
+        self.document = blinkcollection
+
+        '''
         # This is a cancer cure but it already formed metastases and every hope is too late.
         # https://docs.djangoproject.com/en/2.2/topics/db/sql/
         with connection.cursor() as cursor:
@@ -303,8 +264,7 @@ class Beautyreport(models.Model):
                 collection_id, file_hash) values (null, 'Beautyreport von ' || %s || ' ' || %s || ' vom ' || %s, %s, datetime(), \
                 %s, 1, 'placeholder')",
                 [self.user.first_name, self.user.last_name, today.strftime("%d.%m.%Y"), document_path, self.coach.id])
-
-        super(Beautyreport, self).save(*args, **kwargs)
+        '''
 
     class Meta:
         get_latest_by = "date"
