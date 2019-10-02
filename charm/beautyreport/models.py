@@ -79,10 +79,10 @@ class DocumentHTMLParser(HTMLParser):
     #     print("Encountered some data  :", data)
 
 class BeautyreportDocument(models.Model):
-    beautyreport = models.ForeignKey(
-        "Beautyreport", null=True,
-        on_delete=models.SET_NULL
-    )
+    # beautyreport = models.ForeignKey(
+    #     "Beautyreport", null=True,
+    #     on_delete=models.SET_NULL
+    # )
     link = models.CharField(
         null=True, blank=True,
         max_length=256
@@ -240,15 +240,7 @@ class Beautyreport(models.Model):
         End of Beautyreport generation.
         '''
 
-        for br_obj in BeautyreportDocument.objects.all():
-            print(br_obj.beautyreport)
-            if br_obj.beautyreport == self:
-                br_obj.delete()
-
-        super(Beautyreport, self).save(*args, **kwargs)
-
         blinkcollection = BeautyreportDocument(
-            beautyreport=self,
             link=path
         )
 
@@ -265,6 +257,10 @@ class Beautyreport(models.Model):
                 %s, 1, 'placeholder')",
                 [self.user.first_name, self.user.last_name, today.strftime("%d.%m.%Y"), document_path, self.coach.id])
         '''
+
+        super(Beautyreport, self).save(*args, **kwargs)
+
+
 
     class Meta:
         get_latest_by = "date"
