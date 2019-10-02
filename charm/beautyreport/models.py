@@ -78,6 +78,16 @@ class DocumentHTMLParser(HTMLParser):
     # def handle_data(self, data):
     #     print("Encountered some data  :", data)
 
+class BeautyreportDocument(models.Model):
+    beautyreport = models.ForeignKey(
+        "Beautyreport", null=True,
+        on_delete=models.SET_NULL
+    )
+    link = models.CharField(
+        null=True, blank=True,
+        max_length=256
+    )
+
 class FormField(AbstractFormField):
    page = ParentalKey('BrFormPage', on_delete=models.CASCADE, related_name='form_fields')
 
@@ -95,6 +105,12 @@ class Beautyreport(models.Model):
         Coach, null=True,
         on_delete=models.SET_NULL,
         related_name='Coach_BR'
+    )
+    document = models.ForeignKey(
+        BeautyreportDocument,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='Document_BR'
     )
     # docx_url = models.CharField(
     #     null=True, blank=True,
@@ -123,7 +139,7 @@ class Beautyreport(models.Model):
         data = json.loads(raw_data)
 
         # Initialize a new document
-        document = Document("template.docx")
+        document = Document("media/template.docx")
         # document = Document()
 
         '''
@@ -151,12 +167,11 @@ class Beautyreport(models.Model):
         paragraph_format.space_after = 0
         '''
 
-
         # document.save("template.docx")
 
+        last_run_identifier = len(data) - 1
 
-
-        for ka in data:
+        for count, ka in enumerate(data):
             print("**** Word Debugging ****")
             print("*** Chapter:")
             print(data[ka])
@@ -192,45 +207,40 @@ class Beautyreport(models.Model):
                                 pass
             # Page break after main chapter
             lb = document.add_paragraph()
-            lb.add_run().add_break(WD_BREAK.PAGE)
+            if not count == last_run_identifier:
+                lb.add_run().add_break(WD_BREAK.PAGE)
 
-
-
-        # '''
-
-        # n = 0
-        # while True:
-        #     try:
-        #         document.add_heading(data[str('chapter' + str(n))]['chapterHeader'], level=1)
-        #         n1 = 0
-        #         while True:
-        #             try:
-        #                 n2 = 0
-        #                 while True:
-        #                     try:
-        #                         document.add_paragraph(data[str('chapter' + str(n))][str('subchapter' + str(n1))][str('paragraph' + str(n2))]['text'])
-        #                         n2 = n2 + 1
-        #                     except:
-        #                         break
-        #                 n1 = n1 + 1
-        #             except:
-        #                 break
-        #         n = n + 1
-        #     except:
-        #         break
-
+        try:
+            nid = BeautyreportDocument.objects.latest('id').id
+        except:
+            nid = 0
 
         document_name = 'Beautyreport-' \
             + self.user.first_name + '-' \
             + today.strftime("%Y-%m-%d") + '-' \
-            + str(Beautyreport.objects.latest('id').id) + '.docx'
+            + str(nid) + '.docx'
 
         directory = settings.BR_DOCUMENT_PATH
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        document.save(directory + document_name)
+        path = directory + document_name
 
+        document.save(path)
+
+        for br_obj in BeautyreportDocument.objects.all():
+            print(br_obj.beautyreport)
+            if br_obj.beautyreport == self:
+                br_obj.delete()
+
+        blinkcollection = BeautyreportDocument(
+            beautyreport=self,
+            link=path
+        )
+
+        blinkcollection.save()
+
+        self.document = blinkcollection
 
         '''
         # This is a cancer cure but it already formed metastases and every hope is too late.
