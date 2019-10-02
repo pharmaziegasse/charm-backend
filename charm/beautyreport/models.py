@@ -128,6 +128,14 @@ class Beautyreport(models.Model):
         if not self.date:
             self.date = today
 
+
+        '''
+        Here starts the Beautyreport generation part.
+        As this is a pretty complex part, it should be split up later.
+
+        Current version: 1.1.0, 10/2/2019
+        '''
+
         # Get the raw form data which got generated out of the submitted anamnese form page
         # json.loads converts it to a dictionary
         content = json.loads(self.form_data)
@@ -227,6 +235,10 @@ class Beautyreport(models.Model):
         path = directory + document_name
 
         document.save(path)
+
+        '''
+        End of Beautyreport generation.
+        '''
 
         for br_obj in BeautyreportDocument.objects.all():
             print(br_obj.beautyreport)
