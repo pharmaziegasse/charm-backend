@@ -150,7 +150,7 @@ class Beautyreport(models.Model):
         document = Document("media/template.docx")
         # document = Document()
 
-        
+        '''
         # Get default document styles
         styles = document.styles
 
@@ -173,7 +173,7 @@ class Beautyreport(models.Model):
         # Paragraph Style (spacing)
         paragraph_format = document.styles['Normal'].paragraph_format
         paragraph_format.space_after = 0
-        
+        '''
 
         # document.save("template.docx")
 
