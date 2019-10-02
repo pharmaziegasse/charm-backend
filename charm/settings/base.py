@@ -121,6 +121,8 @@ GRAPHQL_API = {
     'RELAY': False,
 }
 
+BR_DOCUMENT_PATH = "media/beautyreports/"
+
 # JWT as authentication backend
 AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',
