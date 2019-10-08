@@ -83,7 +83,7 @@ class User(AbstractUser):
         help_text='Phone Number', max_length=40
     )
     email = models.EmailField(
-        null=True, blank=False,
+        null=True, blank=True,
         help_text='Email Address'
     )
     address = models.CharField(
