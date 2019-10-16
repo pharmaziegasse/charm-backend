@@ -1,7 +1,6 @@
 import json
 import os
-
-from datetime import datetime
+import pytz
 
 from charm.coach.models import Coach
 
@@ -122,8 +121,7 @@ class Beautyreport(models.Model):
 
     # custom save function
     def save(self, *args, **kwargs):
-        today = datetime.now()
-        timezone.make_aware(today)
+        today = timezone.now()
 
         if not self.date:
             self.date = today
@@ -289,8 +287,7 @@ class BrFormPage(AbstractEmailForm):
         return br
 
     def process_form_submission(self, form):
-        today = datetime.now()
-        timezone.make_aware(today)
+        today = timezone.now()
 
         br = self.create_br(
             date = today.strftime("%Y-%m-%d %H:%M:%S"),
