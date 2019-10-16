@@ -48,3 +48,9 @@ class ReportsPage(Page):
     edit_handler = TabbedInterface([
         ObjectList(main_content_panels, heading='Main')
     ])
+
+    # # statement checking upon save
+    # def save(self, *args, **kwargs):
+    #     print(ReportsPage.chapters)
+
+    #     super(ReportsPage, self).save(*args, **kwargs)
