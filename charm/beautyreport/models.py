@@ -57,7 +57,8 @@ class DocumentHTMLParser(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag in ["br", "li", "ul", "ol"]:
-            self.run.add_break()
+            # self.run.add_break()
+            self.paragraph = self.document.add_paragraph()
         if tag == "p":
             self.paragraph = self.document.add_paragraph()
         self.run = self.paragraph.add_run()
