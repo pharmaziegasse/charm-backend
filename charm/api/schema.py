@@ -87,7 +87,9 @@ def mutation_parameters() -> dict:
 
 
 Mutations = type("Mutation",
-                 (graphene.ObjectType,),
+                 (
+                 charm.user.schema.Mutation,
+                 graphene.ObjectType,),
                  mutation_parameters()
                  )
 

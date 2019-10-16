@@ -1,13 +1,77 @@
 import graphene
+import pytz
+import uuid
+
+from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import permission_required, login_required
 
-from django.contrib.auth import get_user_model
-
 class UserType(DjangoObjectType):
     class Meta:
         model = get_user_model()
+
+class SetPasswordMutation(graphene.Mutation):
+    # Result returns true if successfull and false if the action failed
+    result = graphene.Field(graphene.Boolean)
+    # A detailed, human-readable return message about what happend
+    message = graphene.Field(graphene.String)
+    # Short, single-string return message
+    msg_code = graphene.Field(graphene.String)
+
+    class Arguments:
+        username = graphene.String(required=True)
+        activation_token = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    def mutate(self, info, username, activation_token, password):
+        user = get_user_model().objects.get(username=username)
+
+        if user.activation_url == None:
+            return SetPasswordMutation(False, "No password reset process initiated.", "no_password_process")
+
+        if not user.activation_url == activation_token:
+            return SetPasswordMutation(False, "Failed due to invalid activation token.", "invalid_activation_token")
+
+        if user.last_password_reset:
+            if (timezone.now() - user.last_password_reset).seconds >= 3600:
+                return SetPasswordMutation(False, "Password reset process expired (older than 60 minutes).", "password_reset_expired")
+
+        get_user_model().set_password(user, password)
+        user.activation_url = None
+        user.save()
+
+        return SetPasswordMutation(True, "Password set successfully.", "success_set_password")
+
+class PasswordResetMutation(graphene.Mutation):
+    # Result returns true if successfull and false if the action failed
+    result = graphene.Field(graphene.Boolean)
+    # A detailed, human-readable return message about what happend
+    message = graphene.Field(graphene.String)
+    # Short, single-string return message
+    msg_code = graphene.Field(graphene.String)
+
+    class Arguments:
+        username = graphene.String(required=True)
+
+    def mutate(self, info, username):
+        user = get_user_model().objects.get(username=username)
+
+        if user.last_password_reset:
+            if (timezone.now() - user.last_password_reset).seconds <= 900:
+                return PasswordResetMutation(False, "Password reset was initiated within the last 15 minutes.", "password_reset_recent")
+
+
+        user.last_password_reset = timezone.now()
+        user.activation_url = uuid.uuid4()
+        user.save()
+
+        return PasswordResetMutation(True, "Password reset URL set successfully.", "success_reset_process")
+
+class Mutation(graphene.ObjectType):
+    set_password = SetPasswordMutation.Field()
+    password_reset_activation = PasswordResetMutation.Field()
 
 class Query(graphene.AbstractType):
     # Returns all users

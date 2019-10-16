@@ -1,8 +1,7 @@
 import json
+import pytz
 
 from charm.coach.models import Coach
-
-from datetime import datetime
 
 # This returns the currently active user model
 from django.contrib.auth import get_user_model
@@ -109,8 +108,7 @@ class AnFormPage(AbstractEmailForm):
 
         form.cleaned_data.update(user_data)
 
-        today = datetime.now()
-        timezone.make_aware(today)
+        today = timezone.now()
 
         an = self.create_an(
             date = today.strftime("%Y-%m-%d %H:%M:%S"),
