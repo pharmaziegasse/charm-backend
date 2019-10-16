@@ -260,8 +260,6 @@ class Beautyreport(models.Model):
 
         super(Beautyreport, self).save(*args, **kwargs)
 
-
-
     class Meta:
         get_latest_by = "date"
 
