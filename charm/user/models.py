@@ -83,7 +83,7 @@ class User(AbstractUser):
         help_text='Phone Number', max_length=40
     )
     email = models.EmailField(
-        null=True, blank=False,
+        null=True, blank=True,
         help_text='Email Address'
     )
     address = models.CharField(
@@ -117,6 +117,10 @@ class User(AbstractUser):
     activation_url = models.CharField(
         null=True, blank=True,
         help_text='Activation URL', max_length=200
+    )
+    last_password_reset = models.DateTimeField(
+        null=True, blank=True,
+        help_text='Last password reset'
     )
 
     # The default identificator Django uses is set to the telephone field
@@ -223,6 +227,7 @@ class User(AbstractUser):
         FieldPanel('country'),
         FieldPanel('newsletter'),
         FieldPanel('activation_url'),
+        FieldPanel('last_password_reset'),
         FieldPanel('registration_data'),
     ]
 

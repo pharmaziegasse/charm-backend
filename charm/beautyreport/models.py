@@ -1,7 +1,6 @@
 import json
 import os
-
-from datetime import datetime
+import pytz
 
 from charm.coach.models import Coach
 
@@ -58,7 +57,8 @@ class DocumentHTMLParser(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag in ["br", "li", "ul", "ol"]:
-            self.run.add_break()
+            # self.run.add_break()
+            self.paragraph = self.document.add_paragraph()
         if tag == "p":
             self.paragraph = self.document.add_paragraph()
         self.run = self.paragraph.add_run()
@@ -122,8 +122,7 @@ class Beautyreport(models.Model):
 
     # custom save function
     def save(self, *args, **kwargs):
-        today = datetime.now()
-        timezone.make_aware(today)
+        today = timezone.now()
 
         if not self.date:
             self.date = today
@@ -260,8 +259,6 @@ class Beautyreport(models.Model):
 
         super(Beautyreport, self).save(*args, **kwargs)
 
-
-
     class Meta:
         get_latest_by = "date"
 
@@ -291,8 +288,7 @@ class BrFormPage(AbstractEmailForm):
         return br
 
     def process_form_submission(self, form):
-        today = datetime.now()
-        timezone.make_aware(today)
+        today = timezone.now()
 
         br = self.create_br(
             date = today.strftime("%Y-%m-%d %H:%M:%S"),
