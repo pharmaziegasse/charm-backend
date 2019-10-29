@@ -15,8 +15,9 @@ from django.utils import timezone
 # DOCX or python-docx is used to create and save the Beautyreport as a Word document
 from docx import Document
 from docx.enum.style import WD_STYLE_TYPE
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_TAB_ALIGNMENT, WD_TAB_LEADER
 from docx.shared import Inches, Pt, RGBColor
+from docx.text.tabstops import TabStop, TabStops
 
 from html.parser import HTMLParser
 
@@ -51,9 +52,18 @@ class DocumentHTMLParser(HTMLParser):
         if tag == "u":
             self.run.underline = True
         if tag in ["br", "ul", "ol"]:
-            self.run.add_break()
+            # self.run.add_break()
+            pass
         if tag == "li":
             self.run.add_text(u'● ')
+        if tag == "tab":
+            print("lolllll")
+            tab_stops = self.paragraph.paragraph_format.tab_stops
+            print(tab_stops)
+            print("okayxxxx")
+            tab_stop = tab_stops.add_tab_stop(Inches(2.5), WD_TAB_ALIGNMENT.LEFT, WD_TAB_LEADER.DOTS)
+            print(tab_stop)
+            self.run.tab_stop
 
     def handle_endtag(self, tag):
         if tag in ["br", "li", "ul", "ol"]:
@@ -89,7 +99,7 @@ class BeautyreportDocument(models.Model):
     )
 
 class FormField(AbstractFormField):
-   page = ParentalKey('BrFormPage', on_delete=models.CASCADE, related_name='form_fields')
+    page = ParentalKey('BrFormPage', on_delete=models.CASCADE, related_name='form_fields')
 
 class Beautyreport(models.Model):
     date = models.DateTimeField(
@@ -193,10 +203,10 @@ class Beautyreport(models.Model):
                 if not kb == 'chapterHeader':
                     if not data[ka][kb]['subChapterHeader'] == '':
                         document.add_paragraph(data[ka][kb]['subChapterHeader'], style='L2 Heading')
-                    print("--------------------------------------------------")
-                    print("*** Adding Sub Heading:")
-                    print(data[ka][kb]['subChapterHeader'])
-                    print("--------------------------------------------------")
+                        print("--------------------------------------------------")
+                        print("*** Adding Sub Heading:")
+                        print(data[ka][kb]['subChapterHeader'])
+                        print("--------------------------------------------------")
                     for kc in data[ka][kb]:
                         if not kc == 'subChapterHeader':
                             print("--------------------------------------------------")
