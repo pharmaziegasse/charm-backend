@@ -121,6 +121,8 @@ GRAPHQL_API = {
     'RELAY': False,
 }
 
+
+AN_DOCUMENT_PATH = "media/anamneses/"
 BR_DOCUMENT_PATH = "media/beautyreports/"
 
 # JWT as authentication backend

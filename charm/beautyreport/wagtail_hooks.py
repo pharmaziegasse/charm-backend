@@ -4,7 +4,7 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
 
 from .models import Beautyreport, BeautyreportDocument
-from ..anamnese.wagtail_hooks import AnamneseAdmin
+from ..anamnese.wagtail_hooks import AnamneseAdmin, AnamenseLinks
 from ..user.wagtail_hooks import UserAdmin
 
 class BeautyreportLinks(ModelAdmin):
@@ -43,6 +43,6 @@ class DataGroup(ModelAdminGroup):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    items = (UserAdmin, AnamneseAdmin, BeautyreportAdmin, BeautyreportLinks)
+    items = (UserAdmin, AnamneseAdmin, BeautyreportAdmin, BeautyreportLinks, AnamenseLinks)
 
 modeladmin_register(DataGroup)

@@ -1,8 +1,13 @@
 import json
+import os
 import pytz
+
+# This generates a Excel sheet out of anamnese data
+import xlsxwriter
 
 from charm.coach.models import Coach
 
+from django.conf import settings
 # This returns the currently active user model
 from django.contrib.auth import get_user_model
 from django.core.serializers.json import DjangoJSONEncoder
@@ -15,6 +20,12 @@ from modelcluster.fields import ParentalKey
 
 from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
 from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField, AbstractFormSubmission
+
+class AnamneseDocument(models.Model):
+    link = models.CharField(
+        null=True, blank=True,
+        max_length=256
+    )
 
 class FormField(AbstractFormField):
    page = ParentalKey('AnFormPage', on_delete=models.CASCADE, related_name='form_fields')
@@ -34,9 +45,89 @@ class Anamnese(models.Model):
         on_delete=models.SET_NULL,
         related_name='Coach_AN'
     )
+    document = models.ForeignKey(
+        AnamneseDocument,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='Document_AN'
+    )
     form_data = models.TextField(
         null=True, blank=True
     )
+
+    # custom save function
+    def save(self, *args, **kwargs):
+        today = timezone.now()
+
+        if not self.date:
+            self.date = today
+
+        # Get the raw form data from a submitted anamnese form page
+        # json.loads converts it to a dictionary
+        content = json.loads(self.form_data)
+
+        try:
+            nid = AnamneseDocument.objects.latest('id').id
+        except:
+            nid = 0
+
+        document_name = 'Anamnese-' \
+            + self.user.first_name + '-' \
+            + today.strftime("%Y-%m-%d") + '-' \
+            + str(nid) + '.xlsx'
+
+
+        directory = settings.AN_DOCUMENT_PATH
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        path = directory + document_name
+
+        # Create a workbook and add a worksheet.
+        workbook = xlsxwriter.Workbook(path)
+        worksheet = workbook.add_worksheet('Anamnesedaten')
+
+        # Add a bold format to use to highlight cells.
+        bold = workbook.add_format({'bold': True})
+        
+        # set the column width
+        worksheet.set_column('A:A', 39)
+        worksheet.set_column('B:B', 66)
+
+        # Write some data headers.
+        worksheet.write('A1', 'Key', bold)
+        worksheet.write('B1', 'Antwort', bold)
+
+        # Start from the first cell. Rows and columns are zero indexed.
+        row = 1
+        col = 0
+
+        for k in content:
+            print(k, content[k])
+            print(type(content[k]))
+            
+            worksheet.write(row, col, k, bold)
+            if (type(content[k]) is str):
+                worksheet.write(row, col+1, content[k])
+            if (type(content[k]) is list):
+                litems = ", "
+                print(litems.join(content[k]))
+                worksheet.write(row, col+1, litems.join(content[k]))
+            if (type(content[k]) is type(None)):
+                worksheet.write(row, col+1, "/")
+                
+            row += 1
+
+        workbook.close()
+        
+        alinkcollection = AnamneseDocument(
+            link=path
+        )
+
+        alinkcollection.save()
+        self.document = alinkcollection
+
+        super(Anamnese, self).save(*args, **kwargs)
 
     class Meta:
         get_latest_by = "date"
@@ -106,7 +197,9 @@ class AnFormPage(AbstractEmailForm):
             user_data['country'] = user.country
         user_data['newsletter'] = user.newsletter
 
-        form.cleaned_data.update(user_data)
+        user_data.update(form.cleaned_data)
+
+        form.cleaned_data = user_data
 
         today = timezone.now()
 
