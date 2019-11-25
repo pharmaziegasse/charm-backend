@@ -78,13 +78,10 @@ class Q1FormPage(AbstractEmailForm):
     def process_form_submission(self, form):
         user = get_user_model().objects.get(id=form.cleaned_data['uid'])
 
-        today = timezone.now()
-
         q1 = self.create_q1(
-            date = today.strftime("%Y-%m-%d %H:%M:%S"),
+            date = timezone.now(),
             user = user,
             coach = form.user,
-            related_to = form.cleaned_data['id'],
             form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
         )
 
@@ -147,13 +144,10 @@ class Q2FormPage(AbstractEmailForm):
     def process_form_submission(self, form):
         user = get_user_model().objects.get(id=form.cleaned_data['uid'])
 
-        today = timezone.now()
-
         q2 = self.create_q2(
-            date = today.strftime("%Y-%m-%d %H:%M:%S"),
+            date = timezone.now(),
             user = user,
             coach = form.user,
-            related_to = form.cleaned_data['id'],
             form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
         )
 
@@ -198,6 +192,9 @@ class Q3FormPage(AbstractEmailForm):
         )
     ]
 
+    def is_valid(self):
+        return True
+
     def get_submission_class(self):
         return Q3FormSubmission
 
@@ -216,13 +213,10 @@ class Q3FormPage(AbstractEmailForm):
     def process_form_submission(self, form):
         user = get_user_model().objects.get(id=form.cleaned_data['uid'])
 
-        today = timezone.now()
-
         q3 = self.create_q3(
-            date = today.strftime("%Y-%m-%d %H:%M:%S"),
+            date = timezone.now(),
             user = user,
             coach = form.user,
-            related_to = form.cleaned_data['id'],
             form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
         )
 
