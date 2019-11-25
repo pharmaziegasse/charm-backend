@@ -23,7 +23,7 @@ class UserAdmin(ModelAdmin):
         'last_name',
         'email',
         'telephone',
-        )
+    )
 
     search_fields = list_display
 

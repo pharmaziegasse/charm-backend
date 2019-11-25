@@ -33,6 +33,7 @@ import charm.user.schema
 import charm.coach.schema
 import charm.customer.schema
 import charm.anamnese.schema
+import charm.questionnaire.schema
 import charm.beautyreport.schema
 
 # api version
@@ -54,6 +55,7 @@ class Query(
     charm.coach.schema.Query,
     charm.customer.schema.Query,
     charm.anamnese.schema.Query,
+    charm.questionnaire.schema.Query,
     charm.beautyreport.schema.Query,
     graphene.ObjectType,
     #AuthQueryMixin_,

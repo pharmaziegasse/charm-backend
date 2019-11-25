@@ -25,7 +25,7 @@ class AnamneseAdmin(ModelAdmin):
         'user',
         'coach',
         'form_data'
-        )
+    )
 
     search_fields = list_display
 

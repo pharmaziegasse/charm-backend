@@ -5,6 +5,7 @@ from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, mode
 
 from .models import Beautyreport, BeautyreportDocument
 from ..anamnese.wagtail_hooks import AnamneseAdmin, AnamenseLinks
+from ..questionnaire.wagtail_hooks import Questionnaire1Admin, Questionnaire2Admin, Questionnaire3Admin
 from ..user.wagtail_hooks import UserAdmin
 
 class BeautyreportLinks(ModelAdmin):
@@ -25,15 +26,11 @@ class BeautyreportAdmin(ModelAdmin):
     add_to_settings_menu = False
     exclude_from_explorer = False
    
-    # Listed in the customer overview
     list_display = (
         'user',
         'coach',
         'form_data'
-        # 'date',
-        # 'uid',
-        # 'brid',
-        )
+    )
 
     search_fields = list_display
 
@@ -43,6 +40,15 @@ class DataGroup(ModelAdminGroup):
     menu_order = 200
     add_to_settings_menu = False
     exclude_from_explorer = False
-    items = (UserAdmin, AnamneseAdmin, BeautyreportAdmin, BeautyreportLinks, AnamenseLinks)
+    items = (
+        UserAdmin,
+        AnamneseAdmin,
+        BeautyreportAdmin,
+        BeautyreportLinks,
+        AnamenseLinks,
+        Questionnaire1Admin,
+        Questionnaire2Admin,
+        Questionnaire3Admin,
+    )
 
 modeladmin_register(DataGroup)
