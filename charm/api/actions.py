@@ -1,4 +1,5 @@
 # python
+import json
 import string
 from typing import Type, Set
 # django
@@ -65,10 +66,38 @@ def _add_form(cls: Type[AbstractForm], node: str, dict_params: dict) -> Type[gra
         # convert camelcase to dashes
         values = {camel_case_to_spaces(k).replace(' ', '-'): v for k, v in values.items()}
         form = instance.get_form(values, None, page=instance, user=user)
+
+        '''
+        This try/except can parse a submitted anamnese or questionnaire to a valid form.
+        
+        A form can either be submitted as 'key': 'value', which is always valid. In this case, the following section
+        will not be able to convert the form data and the program will continue as usual.
+        Or the form is submitted as 'key': '{'helpText': helpText, 'fieldType': fieldType, 'value': value}'.
+        In this case, if the form can entirely be translated (each key has a value field in its dict), it is also a
+        valid submission.
+        '''
+        try:
+            tmp_values = values
+            form.full_values = {}
+            for v in values:
+                # print("V: ", v)
+                # print("VC", json.loads(values[v].replace('\'', '\"'))['value'])
+                form.full_values[v] = json.loads(values[v].replace('\'', '\"'))
+                values[v] = form.full_values[v]['value']
+            parsed = True
+        except:
+            values = tmp_values
+            form.full_values = values
+            parsed = False
+
         if form.is_valid():
             # form_submission
             instance.process_form_submission(form)
-            return registry.forms[_node](result="OK")
+            if parsed:
+                msg = "OK, parsed special input"
+            else:
+                msg = "OK"
+            return registry.forms[_node](result=msg)    
         else:
             return registry.forms[_node](result="FAIL", errors=[FormError(*err) for err in form.errors.items()])
 
