@@ -82,7 +82,7 @@ class Q1FormPage(AbstractEmailForm):
             date = timezone.now(),
             user = user,
             coach = form.user,
-            form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
+            form_data = json.dumps(form.full_values, cls=DjangoJSONEncoder)
         )
 
         self.get_submission_class().objects.create(
@@ -148,7 +148,7 @@ class Q2FormPage(AbstractEmailForm):
             date = timezone.now(),
             user = user,
             coach = form.user,
-            form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
+            form_data = json.dumps(form.full_values, cls=DjangoJSONEncoder)
         )
 
         self.get_submission_class().objects.create(
@@ -192,9 +192,6 @@ class Q3FormPage(AbstractEmailForm):
         )
     ]
 
-    def is_valid(self):
-        return True
-
     def get_submission_class(self):
         return Q3FormSubmission
 
@@ -217,7 +214,7 @@ class Q3FormPage(AbstractEmailForm):
             date = timezone.now(),
             user = user,
             coach = form.user,
-            form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)
+            form_data = json.dumps(form.full_values, cls=DjangoJSONEncoder)
         )
 
         self.get_submission_class().objects.create(
