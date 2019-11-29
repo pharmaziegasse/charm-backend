@@ -299,10 +299,10 @@ class UserFormPage(AbstractEmailForm):
             first_name = first_name,
             last_name = last_name,
             telephone = telephone,
-            email = email,
             coach = User.objects.get(id=coach_id),
 
             # Optional fields
+            email = email,
             customer_id = customer_id,
             title = title,
             birthdate = birthdate,
@@ -326,10 +326,10 @@ class UserFormPage(AbstractEmailForm):
             first_name = form.cleaned_data['first_name'],
             last_name = form.cleaned_data['last_name'],
             telephone = form.cleaned_data['telephone'],
-            email = form.cleaned_data['email'],
             coach_id = form.cleaned_data['coach_id'], # Just the ID as an Integer
 
             # Optional fields
+            email = form.cleaned_data['email'],
             customer_id = form.cleaned_data['customer_id'],
             title = form.cleaned_data['title'],
             birthdate = form.cleaned_data['birthdate'], # format YYYY-MM-DD or MM/DD/YY its really flexible

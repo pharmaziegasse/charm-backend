@@ -1,6 +1,16 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
-from .models import Anamnese
+from .models import Anamnese, AnamneseDocument
+
+class AnamenseLinks(ModelAdmin):
+    model = AnamneseDocument
+    menu_label = "Anamnese Links"
+    menu_icon = "link"
+    menu_order = 310
+
+    list_display = (
+        'link',
+    )
 
 class AnamneseAdmin(ModelAdmin):
     model = Anamnese
@@ -15,7 +25,7 @@ class AnamneseAdmin(ModelAdmin):
         'user',
         'coach',
         'form_data'
-        )
+    )
 
     search_fields = list_display
 

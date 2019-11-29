@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'charm.customer',
     'charm.beautyreport',
     'charm.anamnese',
+    'charm.questionnaire',
 
     # Graphene-Django is built on top of Graphene and is needed for GraphQL (charm.api dependency)
     # https://docs.graphene-python.org/projects/django/en/latest/
@@ -112,6 +113,7 @@ GRAPHQL_API = {
         'home',
         'reports',
         'anamnese',
+        'questionnaire',
         'beautyreport',
     ],
     'PREFIX': {
@@ -121,6 +123,8 @@ GRAPHQL_API = {
     'RELAY': False,
 }
 
+
+AN_DOCUMENT_PATH = "media/anamneses/"
 BR_DOCUMENT_PATH = "media/beautyreports/"
 
 # JWT as authentication backend
