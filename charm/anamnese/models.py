@@ -73,6 +73,7 @@ class Anamnese(models.Model):
 
         document_name = 'Anamnese-' \
             + self.user.first_name + '-' \
+            + self.user.last_name + '-' \
             + today.strftime("%Y-%m-%d") + '-' \
             + str(nid) + '.xlsx'
 
