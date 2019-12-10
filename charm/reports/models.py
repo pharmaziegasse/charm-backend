@@ -6,6 +6,7 @@ from wagtail.core.models import Page
 
 class _S_ParagraphBlock(blocks.StructBlock):
     statement = blocks.CharBlock(null=True, blank=True, required=False)
+    paragraph_header = blocks.CharBlock(null=True, blank=True, required=False)
     paragraph = blocks.RichTextBlock(null=True, blank=False, features=[
         'bold', 'italic', 'underline', 'strikethrough', 'h1', 'h2', 'h3',
         'h4', 'h5', 'h6', 'blockquote', 'ol', 'ul', 'hr', 'embed', 'link',
