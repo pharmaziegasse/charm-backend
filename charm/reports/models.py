@@ -23,7 +23,7 @@ class _S_SubChapterBlock(blocks.StructBlock):
     ], null=True, blank=False)
 
 class _S_ChapterBlock(blocks.StructBlock):
-    chapter_header = blocks.CharBlock(null=True, blank=True)
+    chapter_header = blocks.CharBlock(null=True, blank=True, required=False)
 
     sub_chapters = blocks.StreamBlock([
         ('s_subchapter', _S_SubChapterBlock(null=True, blank=False, icon='mail', label="Sub Chapter")),
