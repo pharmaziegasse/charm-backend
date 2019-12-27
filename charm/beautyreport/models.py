@@ -7,7 +7,7 @@ from charm.coach.models import Coach
 from django.contrib.auth import get_user_model
 from django.core.serializers.json import DjangoJSONEncoder
 
-from django.db import connection, models
+from django.db import models
 
 from django.conf import settings
 from django.utils import timezone

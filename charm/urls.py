@@ -1,3 +1,5 @@
+from .user import views as user_views
+
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
@@ -26,6 +28,8 @@ urlpatterns = [
     # GraphQL and GraphiQL paths
     url(r'^api/graphql', csrf_exempt(GraphQLView.as_view())),
     url(r'^api/graphiql', csrf_exempt(GraphQLView.as_view(graphiql=True, pretty=True))),
+
+    url(r'^createcustomer', user_views.webhook, name='webhook'),
 
     # url(r'^search/$', search_views.search, name='search'),
 
