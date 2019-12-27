@@ -256,11 +256,11 @@ class Beautyreport(models.Model):
         except:
             nid = 0
 
-        document_name = 'Beautyreport-' \
+        document_name = 'Beautyreport_' \
             + self.user.first_name + '-' \
-            + self.user.last_name + '-' \
-            + today.strftime("%Y-%m-%d") + '-' \
-            + str(nid) + '.docx'
+            + self.user.last_name + '_' \
+            + today.strftime("%d/%m/%Y") \
+            + '.docx'
 
         directory = settings.BR_DOCUMENT_PATH
         if not os.path.exists(directory):
