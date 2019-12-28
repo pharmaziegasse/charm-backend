@@ -26,11 +26,13 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 INSTALLED_APPS = [
     # These are our custom written apps.
     'charm.core',
+    'charm.colorfield',
     'charm.api',
     'charm.home',
     'charm.reports',
     'charm.user',
     'charm.coach',
+    'charm.registration',
     'charm.customer',
     'charm.beautyreport',
     'charm.anamnese',
@@ -62,6 +64,8 @@ INSTALLED_APPS = [
     'modelcluster',
     # Django module for Tags, extending modelcluster
     'taggit',
+    'corsheaders',
+    'wagtailfontawesome',
 
     # Default Django apps
     'django.contrib.admin',

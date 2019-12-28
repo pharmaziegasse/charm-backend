@@ -22,4 +22,4 @@ class CustomerAdmin(ModelAdmin):
 
     search_fields = list_display
     
-modeladmin_register(CustomerAdmin)
+# modeladmin_register(CustomerAdmin)
