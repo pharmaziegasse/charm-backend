@@ -1,8 +1,9 @@
+from charm.user.models import User
 from django.contrib.auth.models import BaseUserManager
-
+from django.db import models
+from django.utils import timezone
 from wagtail.admin.edit_handlers import FieldPanel
 
-from charm.user.models import User
 
 # Model manager to use in Proxy model
 class ProxyManager(BaseUserManager):

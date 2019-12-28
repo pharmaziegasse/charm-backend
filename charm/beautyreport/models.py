@@ -7,7 +7,7 @@ from charm.coach.models import Coach
 from django.contrib.auth import get_user_model
 from django.core.serializers.json import DjangoJSONEncoder
 
-from django.db import connection, models
+from django.db import models
 
 from django.conf import settings
 from django.utils import timezone
@@ -256,10 +256,11 @@ class Beautyreport(models.Model):
         except:
             nid = 0
 
-        document_name = 'Beautyreport-' \
+        document_name = 'Beautyreport_' \
             + self.user.first_name + '-' \
-            + today.strftime("%Y-%m-%d") + '-' \
-            + str(nid) + '.docx'
+            + self.user.last_name + '_' \
+            + today.strftime("%d/%m/%Y") \
+            + '.docx'
 
         directory = settings.BR_DOCUMENT_PATH
         if not os.path.exists(directory):
@@ -280,16 +281,6 @@ class Beautyreport(models.Model):
         blinkcollection.save()
 
         self.document = blinkcollection
-
-        '''
-        # This is a cancer cure but it already formed metastases and every hope is too late.
-        # https://docs.djangoproject.com/en/2.2/topics/db/sql/
-        with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO wagtaildocs_document (id, title, file, created_at, uploaded_by_user_id, \
-                collection_id, file_hash) values (null, 'Beautyreport von ' || %s || ' ' || %s || ' vom ' || %s, %s, datetime(), \
-                %s, 1, 'placeholder')",
-                [self.user.first_name, self.user.last_name, today.strftime("%d.%m.%Y"), document_path, self.coach.id])
-        '''
 
         super(Beautyreport, self).save(*args, **kwargs)
 
@@ -322,10 +313,8 @@ class BrFormPage(AbstractEmailForm):
         return br
 
     def process_form_submission(self, form):
-        today = timezone.now()
-
         br = self.create_br(
-            date = today.strftime("%Y-%m-%d %H:%M:%S"),
+            date = timezone.now(),
             user = get_user_model().objects.get(id=form.cleaned_data['uid']),
             coach = form.user,
             form_data = json.dumps(form.cleaned_data, cls=DjangoJSONEncoder)

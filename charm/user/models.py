@@ -122,6 +122,35 @@ class User(AbstractUser):
         null=True, blank=True,
         help_text='Last password reset'
     )
+    # Shopify fields
+    gid = models.CharField(
+        null=True, blank=True,
+        help_text='Shopify Customer ID', max_length=256
+    )
+    orders_count = models.IntegerField(
+        null=True, blank=True,
+        help_text='Order Count'
+    )
+    total_spent = models.DecimalField(
+        null=True, blank=True,
+        decimal_places=2, max_digits=9,
+        help_text='Total spent amount'
+    )
+    note = models.CharField(
+        null=True, blank=True,
+        help_text='Shopify Customer ID', max_length=256
+    )
+
+    # Initializer class
+    # def __init__(self, first_name, last_name, email, phone, gid, orders_count, total_spent, note):
+    #     self.first_name = first_name
+    #     self.last_name = last_name
+    #     self.email = email
+    #     self.telephone = phone
+    #     self.gid = gid
+    #     self.orders_count = orders_count
+    #     self.total_spent = total_spent
+    #     self.note = note
 
     # The default identificator Django uses is set to the telephone field
     # USERNAME_FIELD = 'telephone'

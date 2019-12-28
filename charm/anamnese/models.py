@@ -71,10 +71,11 @@ class Anamnese(models.Model):
         except:
             nid = 0
 
-        document_name = 'Anamnese-' \
+        document_name = 'Anamnese_' \
             + self.user.first_name + '-' \
-            + today.strftime("%Y-%m-%d") + '-' \
-            + str(nid) + '.xlsx'
+            + self.user.last_name + '_' \
+            + today.strftime("%d/%m/%Y") \
+            + '.xlsx'
 
 
         directory = settings.AN_DOCUMENT_PATH
