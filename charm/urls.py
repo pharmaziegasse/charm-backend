@@ -29,7 +29,8 @@ urlpatterns = [
     url(r'^api/graphql', csrf_exempt(GraphQLView.as_view())),
     url(r'^api/graphiql', csrf_exempt(GraphQLView.as_view(graphiql=True, pretty=True))),
 
-    url(r'^createcustomer', user_views.webhook, name='webhook'),
+    url(r'^createcustomer', user_views.webhook_create, name='webhook_create'),
+    url(r'^updatecustomer', user_views.webhook_update, name='webhook_update'),
 
     # url(r'^search/$', search_views.search, name='search'),
 

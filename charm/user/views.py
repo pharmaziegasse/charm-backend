@@ -12,33 +12,32 @@ from .models import User
 
 @csrf_exempt
 @require_POST
-def webhook(request):
+def webhook_create(request):
     jsondata = request.body
     data = json.loads(jsondata)
     # meta = copy.copy(request.META)
     
     print(data)
-    print(data['addresses'][0])
+    # print(data['addresses'][0])
 
     user = User(
         gid = data['id'],
         first_name = data['first_name'],
         last_name = data['last_name'],
-        email = data['email'],
+        email = data['email'] or '',
         telephone = data['phone'],
         orders_count = data['orders_count'],
         total_spent = data['total_spent'],
-        note = data['note'],
+        note = data['note'] or '',
         coach = User.objects.get(username='simon'),
-        address = data['addresses'][0]['address1'],
-        city = data['addresses'][0]['city'],
-        postal_code = data['addresses'][0]['zip'],
-        country = data['addresses'][0]['countryCode']
+        address = data['addresses'][0]['address1'] or '',
+        city = data['addresses'][0]['city'] or '',
+        postal_code = data['addresses'][0]['zip'] or ''
+        # country = data['addresses'][0]['countryCode']
     )
 
     user.save()
     print('User Saved')
-    
 
     # WebhookTransaction.objects.create(
     #     date_event_generated=datetime.datetime.fromtimestamp(
@@ -48,5 +47,42 @@ def webhook(request):
     #     body=data,
     #     request_meta=meta
     # )
+
+    return HttpResponse(status=200)
+
+
+@csrf_exempt
+@require_POST
+def webhook_update(request):
+    jsondata = request.body
+    data = json.loads(jsondata)
+    # meta = copy.copy(request.META)
+    
+    print(data)
+    # print(data['addresses'][0])
+
+    try:
+        user = User.objects.get(gid = data['id'])
+
+        user.update(
+            first_name = data['first_name'],
+            last_name = data['last_name'],
+            email = data['email'] or '',
+            telephone = data['phone'],
+            orders_count = data['orders_count'],
+            total_spent = data['total_spent'],
+            note = data['note'] or '',
+            coach = User.objects.get(username='simon'),
+            address = data['addresses'][0]['address1'] or '',
+            city = data['addresses'][0]['city'] or '',
+            postal_code = data['addresses'][0]['zip'] or ''
+        )
+    except:
+        # user = User.objects.get(username = data['metafields']['uid'])
+        pass
+    
+
+    user.save()
+    print('User Updated')
 
     return HttpResponse(status=200)
