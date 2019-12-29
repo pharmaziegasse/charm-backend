@@ -7,6 +7,9 @@ import uuid
 # Json for the form data
 import json
 
+# Shopify Customer Creation
+from .shopify import send_shopify
+
 # This returns the currently active user model
 from django.contrib.auth import get_user_model
 
@@ -19,6 +22,9 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 
 # ValidationError is used to raise our custom errors through the clean() method
 from django.core.exceptions import ValidationError
+
+# Mail sending
+from django.core.mail import send_mail
 
 # JSON Encoder
 from django.core.serializers.json import DjangoJSONEncoder
@@ -100,7 +106,7 @@ class User(AbstractUser):
     )
     country = models.CharField(
         null=True, blank=True,
-        help_text='Country Code (e.g. AT)', max_length=2
+        help_text='Country Name', max_length=32
     )
     newsletter = models.BooleanField(
         blank=False, default=False,
@@ -211,14 +217,17 @@ class User(AbstractUser):
                 # Sets is_active automatically to True either when registration_data is empty or is_customer is true
                 # registration_data is empty when a user is created manually on the Wagtail admin page (coach)
                 self.is_active = True
-                
-                # send_mail(
-                #     'got activated',
-                #     'You got activated.',
-                #     'noreply@pharmaziegasse.at',
-                #     ['f.kleber@gasser-partner.at'],
-                #     fail_silently=False,
-                # )
+
+                # Does not work if Customer is created directly through Wagtail                
+                self.gid = send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
+
+                send_mail(
+                    'got activated',
+                    'You got activated.',
+                    'noreply@pharmaziegasse.at',
+                    ['f.kleber@gasser-partner.at'],
+                    fail_silently=False,
+                )
         else:
             self.is_active = False
 
@@ -238,6 +247,8 @@ class User(AbstractUser):
 
     panels = [
         FieldPanel('username'),
+        FieldPanel('gid'),
+        FieldPanel('is_active'),
         FieldPanel('is_staff'),
         FieldPanel('is_coach'),
         FieldPanel('is_customer'),
