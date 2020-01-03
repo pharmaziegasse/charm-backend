@@ -119,6 +119,7 @@ GRAPHQL_API = {
         'anamnese',
         'questionnaire',
         'beautyreport',
+        'registration',
     ],
     'PREFIX': {
     },

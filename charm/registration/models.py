@@ -31,19 +31,23 @@ class Registration(User):
 
     # Panels/fields to fill in the Add Registration form
     panels = [
+        # FieldPanel('username'),
         FieldPanel('is_customer'),
-        FieldPanel('date_joined'),
+        FieldPanel('customer_id'),
+        FieldPanel('coach'),
+        FieldPanel('verified'),
         FieldPanel('title'),
         FieldPanel('first_name'),
         FieldPanel('last_name'),
         FieldPanel('email'),
+        FieldPanel('birthdate'),
         FieldPanel('telephone'),
         FieldPanel('address'),
         FieldPanel('city'),
         FieldPanel('postal_code'),
         FieldPanel('country'),
         FieldPanel('newsletter'),
-        FieldPanel('registration_data'),
+        #FieldPanel('registration_data'),
     ]
 
     def __str__(self):
@@ -112,7 +116,8 @@ class RegistrationformPage(AbstractEmailForm):
     def create_user(self, title, first_name, last_name, email, telephone, address, city, postal_code, country, newsletter, verified, registration_data):
         # enter the data here
         user = get_user_model()(
-            is_customer=False,
+            is_active=False,
+            is_customer=True,
             title=title,
             first_name=first_name,
             last_name=last_name,

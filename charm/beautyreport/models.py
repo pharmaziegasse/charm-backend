@@ -259,7 +259,7 @@ class Beautyreport(models.Model):
         document_name = 'Beautyreport_' \
             + self.user.first_name + '-' \
             + self.user.last_name + '_' \
-            + today.strftime("%d/%m/%Y") \
+            + today.strftime("%d-%m-%Y") \
             + '.docx'
 
         directory = settings.BR_DOCUMENT_PATH
