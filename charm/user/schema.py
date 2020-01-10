@@ -89,29 +89,31 @@ class AlertUserMutation(graphene.Mutation):
         email = graphene.String(required=False)
         is_active = graphene.Boolean(required=False)
 
-    def mutation(self, user_id, first_name, last_name, city, country, address, postal_code, telephone, email, is_active):
+    def mutate(self, info, user_id, **_kwargs):
         user = get_user_model().objects.get(id=user_id)
 
-        if first_name:
-            user.first_name = first_name
-        if last_name:
-            user.last_name = last_name
-        if city:
-            user.city = city
-        if country:
-            user.country = country
-        if address:
-            user.address = address
-        if postal_code:
-            user.postal_code = postal_code
-        if telephone:
-            user.telephone = telephone
-        if email:
-            user.email = email
-        if is_active:
-            is_active = is_active
+        if _kwargs.get('first_name'):
+            user.first_name = _kwargs.get('first_name')
+        if _kwargs.get('last_name'):
+            user.last_name = _kwargs.get('last_name')
+        if _kwargs.get('city'):
+            user.city = _kwargs.get('city')
+        if _kwargs.get('country'):
+            user.country = _kwargs.get('country')
+        if _kwargs.get('adress'):
+            user.address = _kwargs.get('adress')
+        if _kwargs.get('postal_code'):
+            user.postal_code = _kwargs.get('postal_code')
+        if _kwargs.get('telephone'):
+            user.telephone = _kwargs.get('telephone')
+        if _kwargs.get('email'):
+            user.email = _kwargs.get('email')
+        if _kwargs.get('is_active'):
+            user. is_active = _kwargs.get('is_active')
 
         user.save()
+
+        return AlertUserMutation(True, "User altered successfully.", "success_alter_user")
 
 class Mutation(graphene.ObjectType):
     set_password = SetPasswordMutation.Field()
