@@ -56,7 +56,7 @@ class User(AbstractUser):
     )
     customer_id = models.CharField(
         null=True, blank=True,
-        help_text="Kundennummer", max_length=36 
+        help_text="Kundennummer", max_length=36
     )
     is_coach = models.BooleanField(
         blank=False, default=False,
@@ -75,7 +75,7 @@ class User(AbstractUser):
     #     help_text='If registering a user, set the user\'s secondary coach', max_length=36
     # )
     title = models.CharField(
-        null=True, blank=True, 
+        null=True, blank=True,
         help_text='Title', max_length=20
     )
     birthdate = models.DateField(
@@ -160,7 +160,7 @@ class User(AbstractUser):
 
     # The default identificator Django uses is set to the telephone field
     # USERNAME_FIELD = 'telephone'
-    
+
     # In this method, custom model validation is provided. This is called by full_clean().
     # https://docs.djangoproject.com/en/2.2/ref/models/instances/#django.db.models.Model.clean
     def clean(self):
@@ -172,8 +172,8 @@ class User(AbstractUser):
             ValidationErrorList.append(ValidationError("User cannot be customer and coach at the same time"))
 
         # A customer can not be saved without a coach
-        if self.is_customer and not self.coach:
-            ValidationErrorList.append(ValidationError("Customer has to have a coach"))
+        #if self.is_customer and not self.coach:
+        #    ValidationErrorList.append(ValidationError("Customer has to have a coach"))
 
         # A staff member needs a rememberable username to be set to log into the wagtail CMS
         if self.is_staff and not self.username:
@@ -211,15 +211,19 @@ class User(AbstractUser):
         if not self.is_staff and not self.username:
             # Set the username to a unique, random value
             self.username = str(uuid.uuid4())
-            
+
         if not self.registration_data or self.is_customer:
             if not self.is_active:
                 # Sets is_active automatically to True either when registration_data is empty or is_customer is true
                 # registration_data is empty when a user is created manually on the Wagtail admin page (coach)
                 self.is_active = True
 
-                # Does not work if Customer is created directly through Wagtail                
-                self.gid = send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
+                # Does not work if Customer is created directly through Wagtail
+                #send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
+                try:
+                    self.gid = send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
+                except:
+                    pass
 
                 send_mail(
                     'got activated',
@@ -300,7 +304,7 @@ class User(AbstractUser):
 
 
 class FormField(AbstractFormField):
-   page = ParentalKey('UserFormPage', on_delete=models.CASCADE, related_name='form_fields')
+    page = ParentalKey('UserFormPage', on_delete=models.CASCADE, related_name='form_fields')
 
 class UserFormPage(AbstractEmailForm):
     content_panels = AbstractEmailForm.content_panels + [

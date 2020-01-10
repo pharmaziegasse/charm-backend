@@ -43,7 +43,7 @@ def send_shopify(newsletter, first_name, last_name, email, telephone, address, c
                 "description": "Customer's Birthdate",
                 "key": "birthdate",
                 "namespace": "default_custom_field",
-                "value": birthdate.strftime("%Y-%m-%d"),
+                "value": "",
                 "valueType": "STRING"
                 },
                 {
