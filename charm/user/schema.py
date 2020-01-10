@@ -69,9 +69,54 @@ class PasswordResetMutation(graphene.Mutation):
 
         return PasswordResetMutation(True, "Password reset URL set successfully.", "success_reset_process")
 
+class AlertUserMutation(graphene.Mutation):
+    # Result returns true if successfull and false if the action failed
+    result = graphene.Field(graphene.Boolean)
+    # A detailed, human-readable return message about what happend
+    message = graphene.Field(graphene.String)
+    # Short, single-string return message
+    msg_code = graphene.Field(graphene.String)
+
+    class Arguments:
+        user_id = graphene.Int(required=True)
+        first_name = graphene.String(required=False)
+        last_name = graphene.String(required=False)
+        city = graphene.String(required=False)
+        country = graphene.String(required=False)
+        address = graphene.String(required=False)
+        postal_code = graphene.String(required=False)
+        telephone = graphene.String(required=False)
+        email = graphene.String(required=False)
+        is_active = graphene.Boolean(required=False)
+
+    def mutation(self, user_id, first_name, last_name, city, country, address, postal_code, telephone, email, is_active):
+        user = get_user_model().objects.get(id=user_id)
+
+        if first_name:
+            user.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+        if city:
+            user.city = city
+        if country:
+            user.country = country
+        if address:
+            user.address = address
+        if postal_code:
+            user.postal_code = postal_code
+        if telephone:
+            user.telephone = telephone
+        if email:
+            user.email = email
+        if is_active:
+            is_active = is_active
+
+        user.save()
+
 class Mutation(graphene.ObjectType):
     set_password = SetPasswordMutation.Field()
     password_reset_activation = PasswordResetMutation.Field()
+    alter_user = AlertUserMutation.Field()
 
 class Query(graphene.AbstractType):
     # Returns all users
