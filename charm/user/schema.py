@@ -69,6 +69,8 @@ class PasswordResetMutation(graphene.Mutation):
 
         return PasswordResetMutation(True, "Password reset URL set successfully.", "success_reset_process")
 
+
+# Mutation for altering a specific User object
 class AlertUserMutation(graphene.Mutation):
     # Result returns true if successfull and false if the action failed
     result = graphene.Field(graphene.Boolean)
