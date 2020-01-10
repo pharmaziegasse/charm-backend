@@ -89,7 +89,7 @@ class AlertUserMutation(graphene.Mutation):
         email = graphene.String(required=False)
         is_active = graphene.Boolean(required=False)
 
-    def mutation(self, user_id, first_name, last_name, city, country, address, postal_code, telephone, email, is_active):
+    def mutate(self, user_id, first_name, last_name, city, country, address, postal_code, telephone, email, is_active):
         user = get_user_model().objects.get(id=user_id)
 
         if first_name:
