@@ -211,29 +211,35 @@ class User(AbstractUser):
         if not self.is_staff and not self.username:
             # Set the username to a unique, random value
             self.username = str(uuid.uuid4())
+            self.is_active = True
+            
+            try:
+                self.gid = send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
+            except:
+                pass
 
-        if not self.registration_data or self.is_customer:
-            if not self.is_active:
-                # Sets is_active automatically to True either when registration_data is empty or is_customer is true
-                # registration_data is empty when a user is created manually on the Wagtail admin page (coach)
-                self.is_active = True
+        # if not self.registration_data or self.is_customer:
+        #     if not self.is_active:
+        #         # Sets is_active automatically to True either when registration_data is empty or is_customer is true
+        #         # registration_data is empty when a user is created manually on the Wagtail admin page (coach)
+        #         self.is_active = True
 
-                # Does not work if Customer is created directly through Wagtail
-                #send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
-                try:
-                    self.gid = send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
-                except:
-                    pass
+        #         # Does not work if Customer is created directly through Wagtail
+        #         #send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
+        #         try:
+        #             self.gid = send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
+        #         except:
+        #             pass
 
-                send_mail(
-                    'got activated',
-                    'You got activated.',
-                    'noreply@pharmaziegasse.at',
-                    ['f.kleber@gasser-partner.at'],
-                    fail_silently=False,
-                )
-        else:
-            self.is_active = False
+        #         send_mail(
+        #             'got activated',
+        #             'You got activated.',
+        #             'noreply@pharmaziegasse.at',
+        #             ['f.kleber@gasser-partner.at'],
+        #             fail_silently=False,
+        #         )
+        # else:
+        #     self.is_active = False
 
         super(User, self).save(*args, **kwargs)
 
