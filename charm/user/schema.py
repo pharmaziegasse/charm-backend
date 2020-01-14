@@ -90,6 +90,7 @@ class AlertUserMutation(graphene.Mutation):
         telephone = graphene.String(required=False)
         email = graphene.String(required=False)
         is_active = graphene.Boolean(required=False)
+        is_customer = graphene.Boolean(required=False)
 
     def mutate(self, info, user_id, **_kwargs):
         user = get_user_model().objects.get(id=user_id)
@@ -111,7 +112,9 @@ class AlertUserMutation(graphene.Mutation):
         if _kwargs.get('email'):
             user.email = _kwargs.get('email')
         if _kwargs.get('is_active'):
-            user. is_active = _kwargs.get('is_active')
+            user.is_active = _kwargs.get('is_active')
+        if _kwargs.get('is_customer'):
+            user.is_customer = _kwargs.get('is_customer')
 
         user.save()
 
