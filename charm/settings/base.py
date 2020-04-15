@@ -26,8 +26,11 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 INSTALLED_APPS = [
     # These are our custom written apps.
     'charm.core',
+    # Colorfield is a dependency of charm.home
     'charm.colorfield',
     'charm.api',
+    # Despite being on the charm folder path, the home app is not part of the diploma thesis
+    # This app is responsible for managing the www.pharmaziegasse.at website
     'charm.home',
     'charm.reports',
     'charm.user',

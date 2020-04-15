@@ -1,3 +1,6 @@
+# This provides an interface for the Shopify CRM, available through a webhook
+# This is not described within the diploma thesis, as this is an unused prototype
+
 # https://medium.com/@raiderrobert/how-to-make-a-webhook-receiver-in-django-1ce260f4efff
 
 import copy, json, datetime

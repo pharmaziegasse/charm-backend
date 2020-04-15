@@ -29,8 +29,10 @@ urlpatterns = [
     url(r'^api/graphql', csrf_exempt(GraphQLView.as_view())),
     url(r'^api/graphiql', csrf_exempt(GraphQLView.as_view(graphiql=True, pretty=True))),
 
-    url(r'^createcustomer', user_views.webhook_create, name='webhook_create'),
-    url(r'^updatecustomer', user_views.webhook_update, name='webhook_update'),
+    # This is a webhook for implementing a interface for the Shopify CRM
+    # This is not described within the diploma thesis, as this is an unused prototype
+    # url(r'^createcustomer', user_views.webhook_create, name='webhook_create'),
+    # url(r'^updatecustomer', user_views.webhook_update, name='webhook_update'),
 
     # url(r'^search/$', search_views.search, name='search'),
 
