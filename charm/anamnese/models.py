@@ -2,9 +2,6 @@ import json
 import os
 import pytz
 
-# This generates a Excel sheet out of anamnese data
-import xlsxwriter
-
 from charm.coach.models import Coach
 
 from django.conf import settings
@@ -15,6 +12,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 from django.utils import timezone
+
+from .document import handle_excel
 
 from modelcluster.fields import ParentalKey
 
@@ -27,8 +26,6 @@ class AnamneseDocument(models.Model):
         max_length=256
     )
 
-class FormField(AbstractFormField):
-   page = ParentalKey('AnFormPage', on_delete=models.CASCADE, related_name='form_fields')
 
 class Anamnese(models.Model):
     date = models.DateTimeField(
@@ -59,74 +56,38 @@ class Anamnese(models.Model):
     def save(self, *args, **kwargs):
         today = timezone.now()
 
+        # Set the creation date
         if not self.date:
             self.date = today
 
-        # Get the raw form data from a submitted anamnese form page
-        # json.loads converts it to a dictionary
-        content = json.loads(self.form_data)
-
-        try:
-            nid = AnamneseDocument.objects.latest('id').id
-        except:
-            nid = 0
-
+        # Save the anamnese in following format
+        # Generating two anamnesis for the same person on the same day will intentially override the older one
         document_name = 'Anamnese_' \
             + self.user.first_name + '-' \
             + self.user.last_name + '_' \
             + today.strftime("%d-%m-%Y") \
             + '.xlsx'
 
-
+        # In the settings file, the path for saving anamnesis excel documents is set with the AN_DOCUMENT_PATH variable
+        # Get the document path, and, if the folder does not exist already, create it
         directory = settings.AN_DOCUMENT_PATH
         if not os.path.exists(directory):
             os.makedirs(directory)
 
+        # Get the document's path and save it accordingly
         path = directory + document_name
 
-        # Create a workbook and add a worksheet.
-        workbook = xlsxwriter.Workbook(path)
-        worksheet = workbook.add_worksheet('Anamnesedaten')
+        # Create the MS Excel sheet
+        handle_excel(self.form_data, path)
 
-        # Add a bold format to use to highlight cells.
-        bold = workbook.add_format({'bold': True})
-        align_left = workbook.add_format({'align': 'left'})
-
-        # set the column width
-        worksheet.set_column('A:A', 39)
-        worksheet.set_column('B:B', 66)
-
-        # Write some data headers.
-        worksheet.write('A1', '#', bold)
-        worksheet.write('B1', 'Antwort', bold)
-
-        # Start from row 1, column 0.
-        row = 1
-        col = 0
-
-        for k in content:
-            # print(k, content[k])
-            # print(type(content[k]))
-            # print(content[k]['helpText'])
-            if k != 'uid':
-                worksheet.write(row, col, content[k]['helpText'], bold)
-                if type(content[k]['value']) is str or type(content[k]['value']) is int:
-                    worksheet.write(row, col+1, content[k]['value'], align_left)
-                if type(content[k]['value']) is list:
-                    litems = ", "
-                    # print(litems.join(content[k]['value']))
-                    worksheet.write(row, col+1, litems.join(content[k]['value']), align_left)
-                if type(content[k]) is type(None):
-                    worksheet.write(row, col+1, "/")
-                row += 1
-
-        workbook.close()
-        
+        # Create an object for storing the anamensis' link
         alinkcollection = AnamneseDocument(
             link=path
         )
 
         alinkcollection.save()
+
+        # Create the relation between the anamnesis' data's object and the link to the anamnesis Excel sheet
         self.document = alinkcollection
 
         super(Anamnese, self).save(*args, **kwargs)
@@ -134,11 +95,12 @@ class Anamnese(models.Model):
     class Meta:
         get_latest_by = "date"
 
+
 class AnFormPage(AbstractEmailForm):
     content_panels = AbstractEmailForm.content_panels + [
         MultiFieldPanel(
             [
-                InlinePanel('form_fields', label="Anamnese fields")
+                InlinePanel('form_fields', label="Anamnese field")
             ],
             heading="Form Fields",
         )
@@ -147,9 +109,8 @@ class AnFormPage(AbstractEmailForm):
     def get_submission_class(self):
         return AnamneseFormSubmission
 
-    def create_an(self, date, user, coach, form_data):
+    def create_an(self, user, coach, form_data):
         an = Anamnese(
-            date = date,
             user = user,
             coach = coach,
             form_data = form_data
@@ -159,9 +120,7 @@ class AnFormPage(AbstractEmailForm):
 
         return an
 
-    def process_form_submission(self, form):
-        user = get_user_model().objects.get(id=form.cleaned_data['uid'])
-     
+    def add_user_dict(user, full_values):
         user_data = {}
         
         if user.customer_id:
@@ -244,11 +203,16 @@ class AnFormPage(AbstractEmailForm):
             "value": newsletter_status
         }
 
-        user_data.update(form.full_values)
-        form.full_values = user_data
+        user_data.update(full_values)
+
+        return full_values
+
+    def process_form_submission(self, form):
+        user = get_user_model().objects.get(id=form.cleaned_data['uid'])
+
+        form.full_values = add_user_dict(user, form.full_values)
 
         an = self.create_an(
-            date = timezone.now(),
             user = user,
             coach = form.user,
             form_data = json.dumps(form.full_values, cls=DjangoJSONEncoder)
@@ -259,6 +223,11 @@ class AnFormPage(AbstractEmailForm):
             page = self,
             an = an,
         )
+
+
+class FormField(AbstractFormField):
+    page = ParentalKey('AnFormPage', on_delete=models.CASCADE, related_name='form_fields')
+
 
 class AnamneseFormSubmission(AbstractFormSubmission):
     an = models.ForeignKey(Anamnese, on_delete=models.CASCADE)

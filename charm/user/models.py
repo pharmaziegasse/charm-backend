@@ -7,9 +7,6 @@ import uuid
 # Json for the form data
 import json
 
-# Shopify Customer Creation
-from .shopify import send_shopify
-
 # This returns the currently active user model
 from django.contrib.auth import get_user_model
 
@@ -24,7 +21,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 
 # Mail sending
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 
 # JSON Encoder
 from django.core.serializers.json import DjangoJSONEncoder
@@ -128,35 +125,6 @@ class User(AbstractUser):
         null=True, blank=True,
         help_text='Last password reset'
     )
-    # Shopify fields
-    gid = models.CharField(
-        null=True, blank=True,
-        help_text='Shopify Customer ID', max_length=256
-    )
-    orders_count = models.IntegerField(
-        null=True, blank=True,
-        help_text='Order Count'
-    )
-    total_spent = models.DecimalField(
-        null=True, blank=True,
-        decimal_places=2, max_digits=9,
-        help_text='Total spent amount'
-    )
-    note = models.CharField(
-        null=True, blank=True,
-        help_text='Shopify Customer ID', max_length=256
-    )
-
-    # Initializer class
-    # def __init__(self, first_name, last_name, email, phone, gid, orders_count, total_spent, note):
-    #     self.first_name = first_name
-    #     self.last_name = last_name
-    #     self.email = email
-    #     self.telephone = phone
-    #     self.gid = gid
-    #     self.orders_count = orders_count
-    #     self.total_spent = total_spent
-    #     self.note = note
 
     # The default identificator Django uses is set to the telephone field
     # USERNAME_FIELD = 'telephone'
@@ -172,15 +140,16 @@ class User(AbstractUser):
             ValidationErrorList.append(ValidationError("User cannot be customer and coach at the same time"))
 
         # A customer can not be saved without a coach
-        #if self.is_customer and not self.coach:
-        #    ValidationErrorList.append(ValidationError("Customer has to have a coach"))
+        if self.is_customer and not self.coach:
+            ValidationErrorList.append(ValidationError("Customer has to have a coach"))
 
         # A staff member needs a rememberable username to be set to log into the wagtail CMS
         if self.is_staff and not self.username:
             ValidationErrorList.append(ValidationError("Staff member needs a username"))
 
-        # if not self.telephone:
-        #     ValidationErrorList.append(ValidationError("User needs to have a valid phone number"))
+        # User needs to have a valid phone number
+        if not self.telephone:
+            ValidationErrorList.append(ValidationError("User needs to have a valid phone number"))
 
         if (len(ValidationErrorList) > 0):
             # All applicable ValidationErrors get raised
@@ -211,35 +180,39 @@ class User(AbstractUser):
         if not self.is_staff and not self.username:
             # Set the username to a unique, random value
             self.username = str(uuid.uuid4())
-            self.is_active = True
-            
-            try:
-                self.gid = send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
-            except:
-                pass
 
-        # if not self.registration_data or self.is_customer:
-        #     if not self.is_active:
-        #         # Sets is_active automatically to True either when registration_data is empty or is_customer is true
-        #         # registration_data is empty when a user is created manually on the Wagtail admin page (coach)
-        #         self.is_active = True
+        if not self.registration_data or self.is_customer:
+            if not self.is_active:
+                # Sets is_active automatically to True either when registration_data is empty or is_customer is true
+                # registration_data is empty when a user is created manually on the Wagtail admin page (coach)
+                self.is_active = True
 
-        #         # Does not work if Customer is created directly through Wagtail
-        #         #send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
-        #         try:
-        #             self.gid = send_shopify(self.newsletter, self.first_name, self.last_name, self.email, self.telephone, self.address, self.city, self.country, self.postal_code, self.username, self.birthdate)
-        #         except:
-        #             pass
+                # Defining the body of the activation email
+                mail_body = "Hallo " + self.first_name + ",<br><br>" + \
+                    "Du hast diese E-Mail Adresse bei deinem Gespräch mit unserem Coach angegeben.<br>" + \
+                    "Zur Bestätigung deines Profils kannst du dir über nachfolgendem Link ein Passwort setzen:<br>" + \
+                    "<a href='https://charm.pharmaziegasse.at/reset?=" + self.activation_url + \
+                    "'>charm.pharmaziegasse.at/reset?=" + self.activation_url + "</a><br><br>" + \
+                    "Liebe Grüße,<br>deine Pharmaziegasse."
 
-        #         send_mail(
-        #             'got activated',
-        #             'You got activated.',
-        #             'noreply@pharmaziegasse.at',
-        #             ['f.kleber@gasser-partner.at'],
-        #             fail_silently=False,
-        #         )
-        # else:
-        #     self.is_active = False
+                print("Sending mail:")
+                print(mail_body)
+
+                # EmailMessage is a Django object for creating formatted Emails
+                activation_mail = EmailMessage(
+                    # Subject
+                    'Pharmaziegasse: E-Mail-Bestätigung',
+                    # Message
+                    mail_body,
+                    # Sender / Email configuration for this production email can be found at settings/production.py
+                    'noreply@pharmaziegasse.at',
+                    # User E-Mail
+                    [self.email]
+                )
+                activation_mail.content_subtype = "html"
+                activation_mail.send()
+        else:
+            self.is_active = False
 
         super(User, self).save(*args, **kwargs)
 
@@ -257,7 +230,6 @@ class User(AbstractUser):
 
     panels = [
         FieldPanel('username'),
-        FieldPanel('gid'),
         FieldPanel('is_active'),
         FieldPanel('is_staff'),
         FieldPanel('is_coach'),
@@ -316,7 +288,7 @@ class UserFormPage(AbstractEmailForm):
     content_panels = AbstractEmailForm.content_panels + [
         MultiFieldPanel(
             [
-                InlinePanel('form_fields', label="User form fields")
+                InlinePanel('form_fields', label="User form field")
             ],
             heading="Form Fields",
         )

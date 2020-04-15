@@ -19,23 +19,23 @@ class _S_SubChapterBlock(blocks.StructBlock):
     
     paragraphs = blocks.StreamBlock([
         # Paragraph blocks are rendered in case a specific statement, which each paragraph has, is true
+        # In case the paragraph's statement is empty, the paragraph is always rendered
         ('s_paragraph', _S_ParagraphBlock(null=True, blank=False, icon='group', label="Paragraph"))
     ], null=True, blank=False)
+
 
 class _S_ChapterBlock(blocks.StructBlock):
     chapter_header = blocks.CharBlock(null=True, blank=True, required=False)
 
     sub_chapters = blocks.StreamBlock([
+        # Sub-chapter blocks do contain headings and constit of multiple paragraphs
         ('s_subchapter', _S_SubChapterBlock(null=True, blank=False, icon='mail', label="Sub Chapter")),
     ], null=True, blank=False)
 
-class ReportsPage(Page):
-    # paragraphs = StreamField([
-    #     ('s_paragraph', _S_ParagraphBlock(null=True, blank=False, icon='group'))
-    # ], null=True, blank=False)
 
+class ReportsPage(Page):
     chapters = StreamField([
-        # Article blocks do contain headings and constit of multiple paragraphs
+        # Chapter blocks do contain headings and constit of multiple sub-chapters
         ('s_chapter', _S_ChapterBlock(null=True, blank=False, icon='group', label="Chapter"))
     ], null=True, blank=False)
 
@@ -49,9 +49,3 @@ class ReportsPage(Page):
     edit_handler = TabbedInterface([
         ObjectList(main_content_panels, heading='Main')
     ])
-
-    # # statement checking upon save
-    # def save(self, *args, **kwargs):
-    #     print(ReportsPage.chapters)
-
-    #     super(ReportsPage, self).save(*args, **kwargs)
