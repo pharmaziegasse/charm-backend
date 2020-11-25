@@ -28,15 +28,18 @@ SECURE_SSL_REDIRECT = os.getenv('DJANGO_SECURE_SSL_REDIRECT', 'off') == 'on'
 # See https://docs.djangoproject.com/en/2.1/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(';')
 
-DEFAULT_FROM_EMAIL='noreply.pharmaziegasse@gmail.com'
-
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# > Email Settings
+# We use SMTP to send emails. We typically use transactional email services
+# that let us use SMTP.
+# https://docs.djangoproject.com/en/2.1/topics/email/
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.office365.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 CSRF_TRUSTED_ORIGINS = ['charm.pharmaziegasse.at']
 
