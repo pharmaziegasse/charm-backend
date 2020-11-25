@@ -1,5 +1,6 @@
 import json
 import uuid
+from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.serializers.json import DjangoJSONEncoder
@@ -150,30 +151,32 @@ class RegistrationformPage(AbstractEmailForm):
                 value = ', '.join(value)
             content.append('{}: {}'.format(field.label, value))
         content = '\n'.join(content)
-        
+
         content += '\n\nMade with ❤ by Werbeagentur Christian Aichner'
 
         #emailfooter = '<style>@keyframes pulse { 10% { color: red; } }</style><p>Made with <span style="width: 20px; height: 1em; color:#dd0000; animation: pulse 1s infinite;">&#x2764;</span> by <a style="color: lightgrey" href="https://www.aichner-christian.com" target="_blank">Werbeagentur Christian Aichner</a></p>'
-        
+
         #html_message = f"{emailheader}\n\n{content}\n\n{emailfooter}"
-        
-        send_mail(self.subject, f"{emailheader}\n\n{content}", addresses, self.from_address)
-    
+
+        html_message = render_to_string('registration/registration_mail_template.html', {'first_name': form.cleaned_data['first_name'], 'last_name': form.cleaned_data['last_name'], 'title': form.cleaned_data['title'], 'email': form.cleaned_data['email'], 'telephone': form.cleaned_data['telephone'], 'address': form.cleaned_data['address'], 'city': form.cleaned_data['city'], 'postal_code': form.cleaned_data['postal_code'], 'newsletter': form.cleaned_data['newsletter'], 'verified': form.cleaned_data['verified']})
+
+        send_mail(self.subject, f"{emailheader}\n\n{content}", addresses, self.from_address, html_message=html_message)
+
     def process_form_submission(self, form):
 
         user=self.create_user(
-          title=form.cleaned_data['title'],
-          first_name=form.cleaned_data['first_name'],
-          last_name=form.cleaned_data['last_name'],
-          email=form.cleaned_data['email'],
-          telephone=form.cleaned_data['telephone'],
-          address=form.cleaned_data['address'],
-          city=form.cleaned_data['city'],
-          postal_code=form.cleaned_data['postal_code'],
-          country=form.cleaned_data['country'],
-          newsletter=form.cleaned_data['newsletter'],
-          verified=form.cleaned_data['verified'],
-          registration_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
+            title=form.cleaned_data['title'],
+            first_name=form.cleaned_data['first_name'],
+            last_name=form.cleaned_data['last_name'],
+            email=form.cleaned_data['email'],
+            telephone=form.cleaned_data['telephone'],
+            address=form.cleaned_data['address'],
+            city=form.cleaned_data['city'],
+            postal_code=form.cleaned_data['postal_code'],
+            country=form.cleaned_data['country'],
+            newsletter=form.cleaned_data['newsletter'],
+            verified=form.cleaned_data['verified'],
+            registration_data=json.dumps(form.cleaned_data, cls=DjangoJSONEncoder),
         )
 
         self.get_submission_class().objects.create(
