@@ -2,7 +2,7 @@ Django>=2.2,<2.3
 wagtail>=2.5,<2.6
 wagtailfontawesome>=1.1.4,<1.2
 Pillow>=4.0.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 python-docx==0.8.10
 xlsxwriter==1.2.3
 graphene-django==2.2
